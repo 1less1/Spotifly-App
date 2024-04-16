@@ -1,0 +1,35 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Spotifly" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <item name="android:windowBackground">@color/black</item>
+
+
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/spotifly_green</item>
+        <item name="colorPrimaryVariant">@color/spotifly_green_darker</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/spotifly_purple</item>
+        <item name="colorSecondaryVariant">@color/spotifly_purple_lighter</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Customize your theme here. -->
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/black</item>
+
+    </style>
+
+    <!-- Theme for the Startup Splash Screen -->
+    <style name="Theme.AnimatedSplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_spotifly_splash</item>
+        <item name="windowSplashScreenAnimationDuration">3500</item>
+        <item name="postSplashScreenTheme">@style/Theme.Spotifly</item>
+
+
+
+    </style>
+</resources>

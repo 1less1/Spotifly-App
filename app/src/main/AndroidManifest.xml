@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.spotifly">
+
+    <!-- Allows the app to have access to the Internet -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:name=".Spotifly"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Spotifly"
+        tools:targetApi="31" >
+
+        <activity android:name=".StartupActivity"
+            android:theme="@style/Theme.AnimatedSplashScreen"
+            android:exported="true">
+            <!-- Intent Filter tells the app how to respond to the activity -->
+            <!-- Internal Activities other than the Launcher Activity do not necessarily need an intent -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity android:name=".AuthorizationActivity"
+            android:theme="@style/Theme.Spotifly"
+            android:exported="true">
+        </activity>
+
+        <!-- Required Addition Detailed on Spotify Android SDK Github -->
+        <!-- This handles the redirect URI after Authorization -->
+        <activity android:name="com.spotify.sdk.android.auth.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="spotifly" android:host="spotifly://callback" />
+            </intent-filter>
+        </activity>
+
+
+        <activity android:name=".MainActivity"
+            android:theme="@style/Theme.Spotifly"
+            android:exported="true">
+        </activity>
+
+
+
+
+    </application>
+
+</manifest>
