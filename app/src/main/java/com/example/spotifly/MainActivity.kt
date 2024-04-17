@@ -70,8 +70,29 @@ class MainActivity : AppCompatActivity() {
     fun makePlaylist() {
         // TODO: make instance of an api call class and return if it was successful or not
         var mainInstance=callAPI()
-        mainInstance.getUserInfo()
-        mainInstance.createPlaylist()
+
+        Handler().postDelayed({
+            mainInstance.getUserInfo()
+            mainInstance.getUserTopItems()
+        }, 750)
+
+        var playlistName = "Test Playlist"
+
+        /*
+        if (Spotifly.SharedPrefsHelper.doesKeyExist(playlistName.toUpperCase())) {
+            // TODO: Prompt user to either choose a new name or to overwrite previous data
+        }
+
+         */
+        mainInstance.createPlaylist(playlistName)
+
+        Handler().postDelayed({
+            mainInstance.addSongToPlaylist(playlistName)
+        }, 750)
+        // Delay definitely needed since sharedPreferences needs time to read data
+        // TODO: I should probably feed arguments into each function as local variables and save things to sharedPrefs as I go
+        // Ex: getUserInfo() calls createPlaylist(playListName, userID) which then calls addSongToPlaylist(playlistID)
+
 
     }
 

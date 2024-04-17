@@ -71,7 +71,7 @@ class AuthorizationActivity: AppCompatActivity() {
                         startActivity(intent)
                         // Terminate the Authorization Activity
                         finish()
-                    }, 1000) // 1000 milliseconds delay
+                    }, 750) // 1000 milliseconds delay
                 }
                 AuthorizationResponse.Type.ERROR -> {
                     // Authentication error occurred
