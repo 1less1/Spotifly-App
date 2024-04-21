@@ -1,59 +1,19 @@
 package com.example.spotifly
 
-import okhttp3.*
+import android.util.Log
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import android.util.Log
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
-import retrofit2.http.*
+class CreatePlaylistAPI(token:String) {
 
-
-class callAPI {
-
-    private val accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
-
-
-    // HTTP GET Request
-    fun getUserInfo() {
-        // Need to get user client id and then save it to separate shared prefs or keep the same for consistency?
-
-        val client = OkHttpClient()
-
-        val request = Request.Builder()
-            .url("https://api.spotify.com/v1/me")
-            .header("Authorization", "Bearer $accessToken")
-            .get()
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("API Error", "Failed to get user profile: ", e)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    val jsonObject = JSONObject(responseBody)
-
-                    val userID = jsonObject.getString("id")
-
-                    Spotifly.SharedPrefsHelper.saveSharedPref("user_id", userID)
-
-                    // Debugging - Logcat
-                    println("User Id: $userID")
-
-
-
-                    Log.d("API Response", responseBody ?: "Empty response")
-                } else {
-                    // Handle error
-                    Log.e("API Error", "Failed to get user profile: ${response.code}")
-                }
-            }
-        })
-
-    }
+    var accessToken = token
 
     // HTTP GET Request
     fun getUserTopItems() {
@@ -62,7 +22,7 @@ class callAPI {
         val client = OkHttpClient()
 
         val request = Request.Builder()
-            .url("https://api.spotify.com/v1/me/top/tracks?limit=50&offset=0")
+            .url("https://api.spotify.com/v1/me/top/tracks?")
             .header("Authorization", "Bearer $accessToken")
             .get()
             .build()
@@ -78,9 +38,26 @@ class callAPI {
                 if (response.isSuccessful) {
                     val responseBody = response.body?.string()
 
+
+                    val trackIds = mutableListOf<String>()
                     val jsonObject = JSONObject(responseBody)
 
-                    Log.d("API Response", responseBody ?: "Empty response")
+                    try {
+                        val itemsArray = jsonObject.getJSONArray("items")
+
+                        for (i in 0 until itemsArray.length()) {
+                            val itemObject = itemsArray.getJSONObject(i)
+                            val trackId = itemObject.getString("id")
+                            trackIds.add(trackId)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    Log.d("API Response", responseBody?: "Empty response")
+
+                    println("User Top Songs: ")
+                    println(trackIds)
 
 
                 } else {
@@ -94,11 +71,6 @@ class callAPI {
         })
 
     }
-
-
-
-
-
 
     // HTTP POST Request
     fun createPlaylist(name: String) {
@@ -221,7 +193,4 @@ class callAPI {
         })
 
     }
-
-    
-
 }

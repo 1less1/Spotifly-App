@@ -5,27 +5,40 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class StartupActivity: AppCompatActivity() {
 
+    // App Lifecycle Functions -----------------------------------------------------------------------------
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        var accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
+        var expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME", 0L)
+
+
+        var splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition{true}
+
+
         super.onCreate(savedInstanceState)
 
-        Thread.sleep(3000) // 3 seconds
-        installSplashScreen()
+        Handler().postDelayed({
+            splashScreen.setKeepOnScreenCondition{false}
+        },3500)
 
         setContentView(R.layout.activity_startup)
 
-        var expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME",0L)
-        var accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
-
         val enterButton = findViewById<Button>(R.id.enter_button)
         enterButton.setOnClickListener {
-          checkAccessToken(accessToken, expirationTime)
+            checkAccessToken(accessToken, expirationTime)
         }
 
         val refreshButton = findViewById<Button>(R.id.refresh_button)
@@ -35,17 +48,21 @@ class StartupActivity: AppCompatActivity() {
 
     }
 
+    // Methods -----------------------------------------------------------------------------
+
+
     fun checkAccessToken(token: String, expirationTime: Long) {
 
         if (token == "") {
-            // Navigate to Main Activity
+            // Need to sign in again
             startActivity(Intent(this, AuthorizationActivity::class.java))
             finish()
 
         } else if (System.currentTimeMillis() >= expirationTime) {
-            // Call RefreshToken Class and then navigate to Main Activity if Successful
+            // Refresh the Access Token then navigate to the Main Activity
             RefreshToken().refreshAccessToken()
             navigateToMainActivity()
+
         } else {
             // Navigate to the Main Activity if there is an Access Token and it is NOT expired
             navigateToMainActivity()
@@ -62,22 +79,26 @@ class StartupActivity: AppCompatActivity() {
     }
 
     fun navigateToMainActivity() {
+        Spotifly.HorizontalProgressBar.animateProgress(this)
+
+        val intent = Intent(this, MainActivity::class.java)
         Handler().postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(intent)
             finish()
-        } ,750)
+        }, 1800)
 
     }
 
-
-
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
 
 

@@ -21,6 +21,8 @@ import java.util.Base64
 // I am changing the functionality of this activity to handle an auth code for this branch
 class AuthorizationActivity: AppCompatActivity() {
 
+    // App Lifecycle Functions -----------------------------------------------------------------------------
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,24 +31,9 @@ class AuthorizationActivity: AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.sign_in_button)
         loginButton.setOnClickListener {// Upon clicking the button, start the spotify authentication
             authenticateSpotify()
+
         }
 
-    }
-    fun authenticateSpotify() {
-        // Create an Authorization Request with the following arguments
-        val builder = AuthorizationRequest.Builder(Spotifly.Global.CLIENT_ID, AuthorizationResponse.Type.CODE, Spotifly.Global.REDIRECT_URI)
-
-        // Request Scopes (Permissions) to access from the User's Spotify Account
-        val scopeArray = arrayOf("user-read-private", "user-read-email", "playlist-read-private", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public",
-            "user-top-read", "user-read-recently-played", "user-follow-read")
-
-        builder.setScopes(scopeArray)
-        builder.setShowDialog(true)
-        // Actually build the full Authorization Request
-        val request = builder.build()
-
-        // Use the Spotify client to open a log in screen with the created request from above
-        AuthorizationClient.openLoginActivity(this, Spotifly.Global.REQUEST_CODE, request)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -63,20 +50,19 @@ class AuthorizationActivity: AppCompatActivity() {
 
                     exchangeCode(authCode)
 
-                    // Create a Handler to post a delayed action to start the next activity
-                    // This activity was finishing too quickly -> SharedPreferences could not save the data in time!!!
-                    Handler().postDelayed({
-                        // Navigate to the MainActivity after saving SharedPreferences
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        // Terminate the Authorization Activity
-                        finish()
-                    }, 750) // 1000 milliseconds delay
+                    Spotifly.HorizontalProgressBar.animateProgress(this)
+
+                    val intent = Intent(this, MainActivity::class.java)
+                     Handler().postDelayed({
+                         startActivity(intent)
+                         finish()
+                     }, 1800)
+
                 }
                 AuthorizationResponse.Type.ERROR -> {
                     // Authentication error occurred
                     Toast.makeText(this, "Login Error: ${response.error}", Toast.LENGTH_SHORT).show()
-                    // TODO: Create an ErrorActivity to display that they were not able to login correctly
+
                 }
                 else -> {
                     // Auth flow was cancelled ie: Closing out of the login prompt!
@@ -86,6 +72,32 @@ class AuthorizationActivity: AppCompatActivity() {
                 // All of the above "Toast" methods display a status message every time you are done with the Authorization Request
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.removeSessionCookies(null)
+
+    }
+
+    // Methods -----------------------------------------------------------------------------
+
+    fun authenticateSpotify() {
+        // Create an Authorization Request with the following arguments
+        val builder = AuthorizationRequest.Builder(Spotifly.Global.CLIENT_ID, AuthorizationResponse.Type.CODE, Spotifly.Global.REDIRECT_URI)
+
+        // Request Scopes (Permissions) to access from the User's Spotify Account
+        val scopeArray = arrayOf("user-read-private", "user-read-email", "playlist-read-private", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public",
+            "user-top-read", "user-read-recently-played", "user-follow-read")
+
+        builder.setScopes(scopeArray)
+        builder.setShowDialog(true)
+        // Actually build the full Authorization Request
+        val request = builder.build()
+
+        // Use the Spotify client to open a log in screen with the created request from above
+        AuthorizationClient.openLoginActivity(this, Spotifly.Global.REQUEST_CODE, request)
     }
 
 
@@ -122,10 +134,14 @@ class AuthorizationActivity: AppCompatActivity() {
                         val jsonObject = JSONObject(responseBody)
 
                         val accessToken = jsonObject.getString("access_token")
-                        val tokenType = jsonObject.getString("token_type")
+                        //val tokenType = jsonObject.getString("token_type")
                         val expiresIn = jsonObject.getInt("expires_in")
                         val refreshToken = jsonObject.getString("refresh_token")
 
+
+                        // Using the API caller to get the USER ID and User Email for future activities.
+                        val apiCaller = UserDataAPI(accessToken)
+                        apiCaller.getUserInfo()
 
                         Spotifly.SharedPrefsHelper.saveSharedPref("ACCESS_TOKEN", accessToken)
                         Spotifly.SharedPrefsHelper.saveSharedPref("REFRESH_TOKEN", refreshToken)
@@ -137,19 +153,6 @@ class AuthorizationActivity: AppCompatActivity() {
 
                         // Debugging
                         Log.d("API Response", responseBody ?: "Empty response")
-
-                        // Debugging - Logcat
-                        println("---------------------------------")
-                        println("Values from JSON: ")
-                        println("Access Token: $accessToken")
-                        println("Token Type: $tokenType")
-                        println("Expires In: $expiresIn seconds")
-                        println("Refresh Token: $refreshToken")
-                        println()
-                        println("Shared Prefs Values:")
-                        println("Access Token: " + Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN",""))
-                        println("Refresh Token: " + Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN", ""))
-                        println("Expires In: " + Spotifly.SharedPrefsHelper.getSharedPref("EXPIRES_IN",0))
 
 
                     } else {
@@ -164,12 +167,6 @@ class AuthorizationActivity: AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val cookieManager = CookieManager.getInstance()
-        cookieManager.removeSessionCookies(null)
-
-    }
 
 
 

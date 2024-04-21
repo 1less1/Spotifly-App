@@ -29,7 +29,9 @@
         <item name="windowSplashScreenAnimationDuration">3500</item>
         <item name="postSplashScreenTheme">@style/Theme.Spotifly</item>
 
-
-
     </style>
+
+
+
+
 </resources>
