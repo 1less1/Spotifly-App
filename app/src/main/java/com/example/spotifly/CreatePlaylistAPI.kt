@@ -19,10 +19,6 @@ class CreatePlaylistAPI(token:String, id: String, c: Context) {
     var accessToken = token
     var userID = id
     val context = c
-    //lateinit var userTopSongs: MutableList<String>
-    //lateinit var playlistID: String
-
-
 
     fun main() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -45,7 +41,7 @@ class CreatePlaylistAPI(token:String, id: String, c: Context) {
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error -> ${e.message}", Toast.LENGTH_SHORT).show()
                 }
 
             }
@@ -62,48 +58,42 @@ class CreatePlaylistAPI(token:String, id: String, c: Context) {
             .get()
             .build()
 
-        try {
-            val response = client.newCall(request).execute()
 
-            // Unsuccessful Response
-            if (!response.isSuccessful) {
-                response.body?.close()
-                throw IOException("Failed to get top tracks: ${response.code}")
-            }
+        val response = client.newCall(request).execute()
 
-            // Successful Response
-            val responseBody = response.body?.string()
-
-            val trackIds = mutableListOf<String>()
-            val jsonObject = JSONObject(responseBody)
-
-            try {
-                val itemsArray = jsonObject.getJSONArray("items")
-
-                for (i in 0 until itemsArray.length()) {
-                    val itemObject = itemsArray.getJSONObject(i)
-                    val trackId = itemObject.getString("id")
-                    trackIds.add(trackId)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            Log.d("API Response", responseBody ?: "Empty response")
-            return trackIds
-
-        } catch (e: IOException) {
-            Log.e("API Error","${e.message}")
-            // Empty List
-            return mutableListOf()
+        // Unsuccessful Response
+        if (!response.isSuccessful) {
+            response.body?.close()
+            throw IOException("Failed to get top tracks: ${response.code}")
         }
+
+        // Successful Response
+        val responseBody = response.body?.string()
+
+        val trackIds = mutableListOf<String>()
+        val jsonObject = JSONObject(responseBody)
+
+        try {
+            val itemsArray = jsonObject.getJSONArray("items")
+
+            for (i in 0 until itemsArray.length()) {
+                val itemObject = itemsArray.getJSONObject(i)
+                val trackId = itemObject.getString("id")
+                trackIds.add(trackId)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        Log.d("API Response", responseBody ?: "Empty response")
+        return trackIds
+
+
 
 
 
 
     }
-
-
 
     // HTTP POST REQUEST
     fun createPlaylist(name: String): String {
@@ -136,35 +126,31 @@ class CreatePlaylistAPI(token:String, id: String, c: Context) {
             .header("Content-Type", "application/json")
             .build()
 
-        try {
-            val response = client.newCall(request).execute()
 
-            // Unsuccessful Response
-            if (!response.isSuccessful) {
-                response.body?.close()
-                throw IOException("Failed to create playlist: ${response.code}")
-            }
+        val response = client.newCall(request).execute()
 
-            // Successful Response
-            val responseBody = response.body?.string()
-
-            val jsonObject = JSONObject(responseBody)
-            val playlistID = jsonObject.getString("id")
-
-
-            // Storing playlist in Shared Preferences like so:
-            // Key: Playlist Name in ALL CAPS
-            // Value: Playlist ID as a string
-            //Spotifly.SharedPrefsHelper.saveSharedPref(playlistName.toUpperCase(), playlistID)
-
-            Log.d("API Response", responseBody ?: "Empty response")
-            return playlistID
-
-        } catch (e: IOException) {
-            Log.e("API Error","${e.message}")
-            // Empty string
-            return ""
+        // Unsuccessful Response
+        if (!response.isSuccessful) {
+            response.body?.close()
+            throw IOException("Failed to create playlist: ${response.code}")
         }
+
+        // Successful Response
+        val responseBody = response.body?.string()
+
+        val jsonObject = JSONObject(responseBody)
+        val playlistID = jsonObject.getString("id")
+
+
+        // Storing playlist in Shared Preferences like so:
+        // Key: Playlist Name in ALL CAPS
+        // Value: Playlist ID as a string
+        //Spotifly.SharedPrefsHelper.saveSharedPref(playlistName.toUpperCase(), playlistID)
+
+        Log.d("API Response", responseBody ?: "Empty response")
+        return playlistID
+
+
 
 
     }
@@ -187,27 +173,23 @@ class CreatePlaylistAPI(token:String, id: String, c: Context) {
             .build()
 
 
-        try {
-            val response = client.newCall(request).execute()
 
-            // Unsuccessful Response
-            if (!response.isSuccessful) {
-                response.body?.close()
-                throw IOException("Failed to edit playlist: HTTP ${response.code}")
-            }
+        val response = client.newCall(request).execute()
 
-            // Successful Response
-            val responseBody = response.body?.string()
-
-            val jsonObject = JSONObject(responseBody)
-
-            Log.d("API Response", responseBody ?: "Empty response")
-
-        } catch (e: IOException) {
-            Log.e("API Error","${e.message}")
+        // Unsuccessful Response
+        if (!response.isSuccessful) {
+            response.body?.close()
+            throw IOException("Failed to edit playlist: HTTP ${response.code}")
         }
 
+        // Successful Response
+        val responseBody = response.body?.string()
 
+        val jsonObject = JSONObject(responseBody)
+
+        Log.d("API Response", responseBody ?: "Empty response")
 
     }
+
+
 }
