@@ -7,19 +7,21 @@ import okio.IOException
 import org.json.JSONObject
 import java.util.Base64
 
-class RefreshToken {
+class RefreshToken(at:String, rt: String, et: Long) {
+
+    var accessToken = at
+    val refreshToken = rt
+    var expirationTime = et
 
     // I will be grabbing constant variables from the Spotifly Class' "Global" singleton object since
     // those are retrieved from RAM vs the hard disk with sharedPreferences
 
     // HTTP POST request needed to refresh existing tokens
-    // I will be using OKHTTP Client Again
     fun refreshAccessToken() {
-        // Data from sharedPreferences
-        val refreshToken = Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN","")
-        // Logcat Output - Debugging
-        var oldAccessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN","")
-        val oldExpirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME",0L)
+        Log.d("RefreshToken", "Refreshing Access Token...")
+
+        val oldAccessToken = accessToken
+        val oldExpirationTime = expirationTime
 
         val client = OkHttpClient()
 
@@ -57,8 +59,8 @@ class RefreshToken {
 
 
                     // Calculate Access Token Expiration Time
-                    val accessTokenExpirationTime = System.currentTimeMillis() + (newExpiresIn*1000)
-                    Spotifly.SharedPrefsHelper.saveSharedPref("EXPIRATION_TIME", accessTokenExpirationTime)
+                    val newExpirationTime = System.currentTimeMillis() + (newExpiresIn*1000)
+                    Spotifly.SharedPrefsHelper.saveSharedPref("EXPIRATION_TIME", newExpirationTime)
 
                     // Debugging
                     Log.d("API Response", responseBody ?: "Empty response")
@@ -76,7 +78,6 @@ class RefreshToken {
                     println("Expiration Time: " + Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME",0L))
 
                 } else {
-
                     Log.e("API Error","Unsuccessful response: ${response.code}" )
                 }
 

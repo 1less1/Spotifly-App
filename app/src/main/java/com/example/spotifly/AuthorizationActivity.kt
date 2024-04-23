@@ -39,7 +39,7 @@ class AuthorizationActivity: AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
 
-        // Check if result comes from the correct activity
+        // Check if result comes from the correct auth request
         if (requestCode == Spotifly.Global.REQUEST_CODE) {
             // Get the authorization result from the client and save it
             val response = AuthorizationClient.getResponse(resultCode, intent)

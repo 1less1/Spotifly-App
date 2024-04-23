@@ -3,16 +3,9 @@ package com.example.spotifly
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class StartupActivity: AppCompatActivity() {
 
@@ -22,6 +15,7 @@ class StartupActivity: AppCompatActivity() {
 
         var accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
         var expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME", 0L)
+        var refreshToken = Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN", "")
 
 
         var splashScreen = installSplashScreen()
@@ -38,12 +32,12 @@ class StartupActivity: AppCompatActivity() {
 
         val enterButton = findViewById<Button>(R.id.enter_button)
         enterButton.setOnClickListener {
-            checkAccessToken(accessToken, expirationTime)
+            checkAccessToken(accessToken, refreshToken, expirationTime)
         }
 
         val refreshButton = findViewById<Button>(R.id.refresh_button)
         refreshButton.setOnClickListener {
-            forceRefresh()
+            forceRefresh(accessToken, refreshToken, expirationTime)
         }
 
     }
@@ -51,29 +45,31 @@ class StartupActivity: AppCompatActivity() {
     // Methods -----------------------------------------------------------------------------
 
 
-    fun checkAccessToken(token: String, expirationTime: Long) {
+    fun checkAccessToken(at: String, rt: String, et: Long) {
+        // at = accessToken
+        // rt = refreshToken
+        // et = expirationTime
 
-        if (token == "") {
+        if (at == "") {
             // Need to sign in again
             startActivity(Intent(this, AuthorizationActivity::class.java))
             finish()
 
-        } else if (System.currentTimeMillis() >= expirationTime) {
+        } else if (System.currentTimeMillis() >= et) {
             // Refresh the Access Token then navigate to the Main Activity
-            RefreshToken().refreshAccessToken()
+            RefreshToken(at, rt, et).refreshAccessToken()
             navigateToMainActivity()
 
         } else {
             // Navigate to the Main Activity if there is an Access Token and it is NOT expired
             navigateToMainActivity()
 
-
         }
 
     }
 
-    fun forceRefresh() {
-        RefreshToken().refreshAccessToken()
+    fun forceRefresh(at: String, rt: String, et: Long) {
+        RefreshToken(at, rt, et).refreshAccessToken()
         navigateToMainActivity()
 
     }

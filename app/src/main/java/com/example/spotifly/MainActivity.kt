@@ -1,4 +1,5 @@
 package com.example.spotifly
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var accessToken: String
     lateinit var user_id: String
     lateinit var apiCaller: CreatePlaylistAPI
+    lateinit var context: Context
 
     // App Lifecycle Functions -----------------------------------------------------------------------------
     
@@ -28,14 +30,13 @@ class MainActivity : AppCompatActivity() {
 
         accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
         user_id = Spotifly.SharedPrefsHelper.getSharedPref("user_id", "")
+        context = applicationContext
 
         // Sets the layout (UI) for this activity
         Handler().postDelayed({
-            apiCaller = CreatePlaylistAPI(accessToken)
+            apiCaller = CreatePlaylistAPI(accessToken, user_id, context)
             setUI()
         },450)
-        // Inflates the Progress Bar Loading Screen
-        //Spotifly.HorizontalProgressBar.animateProgress(this)
 
     }
 
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("Main Activity", "Activity Resumed")
     }
 
     override fun onDestroy() {
@@ -84,13 +86,11 @@ class MainActivity : AppCompatActivity() {
 
 
     fun signOutSpotify() {
-        // The code below cancels any cached Authorization Flow and resets the Access Token to a null value
+        // The code below cancels any cached Authorization Flow and resets all user data
         AuthorizationClient.stopLoginActivity(this, Spotifly.Global.REQUEST_CODE)
-        Spotifly.SharedPrefsHelper.saveSharedPref("ACCESS_TOKEN", "")
-        Spotifly.SharedPrefsHelper.saveSharedPref("user_id", "")
+        Spotifly.SharedPrefsHelper.clearSharedPrefs()
 
         println("Sign Out Success -> Access Token = "+Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN",""))
-
 
         val intent = Intent(this, StartupActivity::class.java)
         startActivity(intent)
@@ -99,37 +99,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun makePlaylist() {
-        apiCaller.getUserTopItems()
-
-
-        // TODO: make instance of an api call class and return if it was successful or not
-
-        /*
-        Handler().postDelayed({
-            mainInstance.getUserInfo()
-            mainInstance.getUserTopItems()
-        }, 750)
-
-
-
-        var playlistName = "Test Playlist"
-
-        /*
-        if (Spotifly.SharedPrefsHelper.doesKeyExist(playlistName.toUpperCase())) {
-            // TODO: Prompt user to either choose a new name or to overwrite previous data
-        }
-
-         */
-        mainInstance.createPlaylist(playlistName)
-
-        Handler().postDelayed({
-            mainInstance.addSongToPlaylist(playlistName)
-        }, 750)
-        // Delay definitely needed since sharedPreferences needs time to read data
-        // TODO: I should probably feed arguments into each function as local variables and save things to sharedPrefs as I go
-        // Ex: getUserInfo() calls createPlaylist(playListName, userID) which then calls addSongToPlaylist(playlistID)
-
-         */
+        apiCaller.main()
 
 
     }

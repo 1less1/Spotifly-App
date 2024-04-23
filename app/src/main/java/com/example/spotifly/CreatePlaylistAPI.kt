@@ -1,86 +1,117 @@
 package com.example.spotifly
 
+import android.content.Context
 import android.util.Log
-import okhttp3.Call
-import okhttp3.Callback
+import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class CreatePlaylistAPI(token:String) {
+class CreatePlaylistAPI(token:String, id: String, c: Context) {
 
     var accessToken = token
+    var userID = id
+    val context = c
+    //lateinit var userTopSongs: MutableList<String>
+    //lateinit var playlistID: String
+
+
+
+    fun main() {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            try {
+                runBlocking {
+                    val userTopSongs = async { getUserTopItems() }.await()
+                    println("User Top Songs After Function Call: $userTopSongs")
+
+                    val playlistId = async { createPlaylist("Your Top Songs") }.await()
+                    println("Playlist ID After Function Call: $playlistId")
+
+                    async { editPlaylist(playlistId, userTopSongs) }.await()
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Playlist Made Successfully!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
+    }
 
     // HTTP GET Request
-    fun getUserTopItems() {
-
-
+    fun getUserTopItems(): MutableList<String> {
         val client = OkHttpClient()
 
         val request = Request.Builder()
-            .url("https://api.spotify.com/v1/me/top/tracks?")
+            .url("https://api.spotify.com/v1/me/top/tracks?limit=35")
             .header("Authorization", "Bearer $accessToken")
             .get()
             .build()
 
+        try {
+            val response = client.newCall(request).execute()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Handle failure
-                Log.e("API Error", "Failed to get top tracks: ", e)
+            // Unsuccessful Response
+            if (!response.isSuccessful) {
+                response.body?.close()
+                throw IOException("Failed to get top tracks: ${response.code}")
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
+            // Successful Response
+            val responseBody = response.body?.string()
 
+            val trackIds = mutableListOf<String>()
+            val jsonObject = JSONObject(responseBody)
 
-                    val trackIds = mutableListOf<String>()
-                    val jsonObject = JSONObject(responseBody)
+            try {
+                val itemsArray = jsonObject.getJSONArray("items")
 
-                    try {
-                        val itemsArray = jsonObject.getJSONArray("items")
-
-                        for (i in 0 until itemsArray.length()) {
-                            val itemObject = itemsArray.getJSONObject(i)
-                            val trackId = itemObject.getString("id")
-                            trackIds.add(trackId)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
-                    Log.d("API Response", responseBody?: "Empty response")
-
-                    println("User Top Songs: ")
-                    println(trackIds)
-
-
-                } else {
-                    Log.e("API Error", "Failed to get top tracks: ${response.code}")
-
-                    response.body?.close()
-
+                for (i in 0 until itemsArray.length()) {
+                    val itemObject = itemsArray.getJSONObject(i)
+                    val trackId = itemObject.getString("id")
+                    trackIds.add(trackId)
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
 
-        })
+            Log.d("API Response", responseBody ?: "Empty response")
+            return trackIds
+
+        } catch (e: IOException) {
+            Log.e("API Error","${e.message}")
+            // Empty List
+            return mutableListOf()
+        }
+
+
+
 
     }
 
-    // HTTP POST Request
-    fun createPlaylist(name: String) {
 
-        val userID = Spotifly.SharedPrefsHelper.getSharedPref("user_id", "")
+
+    // HTTP POST REQUEST
+    fun createPlaylist(name: String): String {
 
         val client = OkHttpClient()
 
         val playlistName = name
-        val playlistDescription = "This playlist was created for testing!"
+        val playlistDescription = "This playlist was created using Spotifly!"
         val isPublic = false
         val isCollaborative = false
 
@@ -105,92 +136,78 @@ class CreatePlaylistAPI(token:String) {
             .header("Content-Type", "application/json")
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Handle failure
-                Log.e("API Error", "Failed to create playlist: ", e)
+        try {
+            val response = client.newCall(request).execute()
+
+            // Unsuccessful Response
+            if (!response.isSuccessful) {
+                response.body?.close()
+                throw IOException("Failed to create playlist: ${response.code}")
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
+            // Successful Response
+            val responseBody = response.body?.string()
 
-                    val jsonObject = JSONObject(responseBody)
-                    val playlistID = jsonObject.getString("id")
-
-                    // Debugging - Logcat
-                    println("New Playlist ID: $playlistID")
+            val jsonObject = JSONObject(responseBody)
+            val playlistID = jsonObject.getString("id")
 
 
-                    // Storing playlist in Shared Preferences like so:
-                    // Key: Playlist Name in ALL CAPS
-                    // Value: Playlist ID as a string
-                    Spotifly.SharedPrefsHelper.saveSharedPref(playlistName.toUpperCase(), playlistID)
+            // Storing playlist in Shared Preferences like so:
+            // Key: Playlist Name in ALL CAPS
+            // Value: Playlist ID as a string
+            //Spotifly.SharedPrefsHelper.saveSharedPref(playlistName.toUpperCase(), playlistID)
 
-                    Log.d("API Response", responseBody ?: "Empty response")
+            Log.d("API Response", responseBody ?: "Empty response")
+            return playlistID
 
+        } catch (e: IOException) {
+            Log.e("API Error","${e.message}")
+            // Empty string
+            return ""
+        }
 
-                } else {
-                    Log.e("API Error", "Failed to create playlist: ${response.code}")
-
-                    response.body?.close()
-
-                }
-            }
-
-        })
 
     }
 
-    fun addSongToPlaylist(name: String) {
 
-        val playlistID = Spotifly.SharedPrefsHelper.getSharedPref(name.toUpperCase(), "")
-        println("Adding songs to $name: $playlistID")
+
+    // HTTP POST Request
+    fun editPlaylist(playlistId: String, songList: MutableList<String>) {
 
         var client = OkHttpClient()
 
-        // POST Request REQUIRES JSON Body!!!!
-        val requestBody = RequestBody.create(
-            "application/json".toMediaTypeOrNull(), """
-        {
-            "uris": [ "spotify:track:27NovPIUIRrOZoCHxABJwK" ]
-        }
-        """.trimIndent()
-        )
+        val trackURIs = songList.joinToString(",") { "spotify:track:$it" }
+        val url = "https://api.spotify.com/v1/playlists/$playlistId/tracks?uris=$trackURIs"
 
         val request = Request.Builder()
-            .url("https://api.spotify.com/v1/playlists/$playlistID/tracks")
-            .post(requestBody)
+            .url(url)
+            .post(RequestBody.create(null, ""))
             .header("Authorization", "Bearer $accessToken")
             .header("Content-Type", "application/json")
             .build()
 
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Handle failure
-                Log.e("API Error", "Failed to add song: ", e)
+        try {
+            val response = client.newCall(request).execute()
+
+            // Unsuccessful Response
+            if (!response.isSuccessful) {
+                response.body?.close()
+                throw IOException("Failed to edit playlist: HTTP ${response.code}")
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
+            // Successful Response
+            val responseBody = response.body?.string()
 
-                    val jsonObject = JSONObject(responseBody)
-                    val snapshotID = jsonObject.getString("snapshot_id")
+            val jsonObject = JSONObject(responseBody)
 
-                    Log.d("API Response", responseBody ?: "Empty response")
+            Log.d("API Response", responseBody ?: "Empty response")
+
+        } catch (e: IOException) {
+            Log.e("API Error","${e.message}")
+        }
 
 
-                } else {
-                    Log.e("API Error", "Failed to add song: ${response.code}")
-
-                    response.body?.close()
-
-                }
-            }
-
-        })
 
     }
 }
