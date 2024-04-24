@@ -35,13 +35,16 @@ class UserDataAPI(token: String) {
 
                     val userID = jsonObject.getString("id")
                     val userEmail = jsonObject.getString("email")
+                    val displayName = jsonObject.getString("display_name")
 
                     Spotifly.SharedPrefsHelper.saveSharedPref("user_id", userID)
                     Spotifly.SharedPrefsHelper.saveSharedPref("email", userEmail)
+                    Spotifly.SharedPrefsHelper.saveSharedPref("display_name", displayName)
 
                     // Debugging - Logcat
                     println("User Id: $userID")
                     println("Email: $userEmail")
+                    println("Display Name: $displayName")
 
                     Log.d("API Response", responseBody ?: "Empty response")
 

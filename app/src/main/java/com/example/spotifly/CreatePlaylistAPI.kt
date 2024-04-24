@@ -14,7 +14,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
 
-class CreatePlaylistAPI(token:String, id: String, c: Context) {
+class CreatePlaylistAPI(c: Context, token:String, id: String) {
 
     var accessToken = token
     var userID = id

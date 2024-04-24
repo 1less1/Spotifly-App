@@ -20,6 +20,7 @@
 
         <activity android:name=".StartupActivity"
             android:theme="@style/Theme.AnimatedSplashScreen"
+            android:screenOrientation="portrait"
             android:exported="true">
             <!-- Intent Filter tells the app how to respond to the activity -->
             <!-- Internal Activities other than the Launcher Activity do not necessarily need an intent -->
@@ -32,6 +33,7 @@
 
         <activity android:name=".AuthorizationActivity"
             android:theme="@style/Theme.Spotifly"
+            android:screenOrientation="portrait"
             android:exported="true">
         </activity>
 
@@ -50,10 +52,9 @@
 
         <activity android:name=".MainActivity"
             android:theme="@style/Theme.Spotifly"
+            android:screenOrientation="portrait"
             android:exported="true">
         </activity>
-
-
 
 
     </application>

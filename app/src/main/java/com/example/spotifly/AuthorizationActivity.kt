@@ -25,14 +25,7 @@ class AuthorizationActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_authorization)
-
-        val loginButton = findViewById<Button>(R.id.sign_in_button)
-        loginButton.setOnClickListener {// Upon clicking the button, start the spotify authentication
-            authenticateSpotify()
-
-        }
+        setUI()
 
     }
 
@@ -56,7 +49,7 @@ class AuthorizationActivity: AppCompatActivity() {
                      Handler().postDelayed({
                          startActivity(intent)
                          finish()
-                     }, 1800)
+                     }, 1850)
 
                 }
                 AuthorizationResponse.Type.ERROR -> {
@@ -82,6 +75,16 @@ class AuthorizationActivity: AppCompatActivity() {
     }
 
     // Methods -----------------------------------------------------------------------------
+
+    fun setUI() {
+        setContentView(R.layout.activity_authorization)
+
+        val loginButton = findViewById<Button>(R.id.sign_in_button)
+        loginButton.setOnClickListener {// Upon clicking the button, start the spotify authentication
+            authenticateSpotify()
+
+        }
+    }
 
     fun authenticateSpotify() {
         // Create an Authorization Request with the following arguments
@@ -139,7 +142,7 @@ class AuthorizationActivity: AppCompatActivity() {
                         val refreshToken = jsonObject.getString("refresh_token")
 
 
-                        // Using the API caller to get the USER ID and User Email for future activities.
+                        // Using the API caller to get the USER ID, User Email, and Display Name for future activities.
                         val apiCaller = UserDataAPI(accessToken)
                         apiCaller.getUserInfo()
 

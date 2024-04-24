@@ -2,20 +2,24 @@ package com.example.spotifly
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import kotlin.properties.Delegates
 
 class StartupActivity: AppCompatActivity() {
 
+    lateinit var accessToken: String
+    var expirationTime by Delegates.notNull<Long>()
+    lateinit var refreshToken: String
+
     // App Lifecycle Functions -----------------------------------------------------------------------------
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        var accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
-        var expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME", 0L)
-        var refreshToken = Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN", "")
+        accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
+        expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME", 0L)
+        refreshToken = Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN", "")
 
 
         var splashScreen = installSplashScreen()
@@ -28,36 +32,38 @@ class StartupActivity: AppCompatActivity() {
             splashScreen.setKeepOnScreenCondition{false}
         },3500)
 
-        setContentView(R.layout.activity_startup)
-
-        val enterButton = findViewById<Button>(R.id.enter_button)
-        enterButton.setOnClickListener {
-            checkAccessToken(accessToken, refreshToken, expirationTime)
-        }
-
-        val refreshButton = findViewById<Button>(R.id.refresh_button)
-        refreshButton.setOnClickListener {
-            forceRefresh(accessToken, refreshToken, expirationTime)
-        }
+        setUI()
 
     }
 
     // Methods -----------------------------------------------------------------------------
 
+    fun setUI() {
+        // Set  UI
+        setContentView(R.layout.activity_startup)
 
-    fun checkAccessToken(at: String, rt: String, et: Long) {
-        // at = accessToken
-        // rt = refreshToken
-        // et = expirationTime
+        val enterButton = findViewById<Button>(R.id.enter_button)
+        enterButton.setOnClickListener {
+            checkAccessToken()
+        }
 
-        if (at == "") {
+        val refreshButton = findViewById<Button>(R.id.refresh_button)
+        refreshButton.setOnClickListener {
+            forceRefresh()
+        }
+
+    }
+
+    fun checkAccessToken() {
+
+        if (accessToken == "") {
             // Need to sign in again
             startActivity(Intent(this, AuthorizationActivity::class.java))
             finish()
 
-        } else if (System.currentTimeMillis() >= et) {
+        } else if (System.currentTimeMillis() >= expirationTime) {
             // Refresh the Access Token then navigate to the Main Activity
-            RefreshToken(at, rt, et).refreshAccessToken()
+            RefreshToken(accessToken, refreshToken, expirationTime).refreshAccessToken()
             navigateToMainActivity()
 
         } else {
@@ -68,8 +74,9 @@ class StartupActivity: AppCompatActivity() {
 
     }
 
-    fun forceRefresh(at: String, rt: String, et: Long) {
-        RefreshToken(at, rt, et).refreshAccessToken()
+    // This is only here for debugging!!!!
+    fun forceRefresh() {
+        RefreshToken(accessToken, refreshToken, expirationTime).refreshAccessToken()
         navigateToMainActivity()
 
     }
