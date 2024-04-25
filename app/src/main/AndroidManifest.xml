@@ -51,7 +51,7 @@
 
 
         <activity android:name=".MainActivity"
-            android:theme="@style/Theme.Spotifly"
+            android:theme="@style/Theme.MainActivity"
             android:screenOrientation="portrait"
             android:exported="true">
         </activity>

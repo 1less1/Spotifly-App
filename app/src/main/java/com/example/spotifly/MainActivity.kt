@@ -3,16 +3,20 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import android.webkit.CookieManager
-import android.webkit.WebView
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.spotify.sdk.android.auth.AuthorizationClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 // Holds the Main UI for the APP and is where most API calls will happen
 class MainActivity : AppCompatActivity() {
@@ -22,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var apiCaller: CreatePlaylistAPI
     lateinit var context: Context
     lateinit var display_name: String
+    lateinit var selectedPlaylistType: String
+    lateinit var playlistName: String
 
     // App Lifecycle Functions -----------------------------------------------------------------------------
     
@@ -37,7 +43,9 @@ class MainActivity : AppCompatActivity() {
         Handler().postDelayed({
             apiCaller = CreatePlaylistAPI(context, accessToken, user_id)
             setUI()
-        },550)
+        },585)
+
+
 
     }
 
@@ -77,13 +85,61 @@ class MainActivity : AppCompatActivity() {
             signOutSpotify()
         }
 
-        val apiCallButton = findViewById<Button>(R.id.api_call_button)
+        val apiCallButton = findViewById<Button>(R.id.create_playlist_button)
         apiCallButton.setOnClickListener {
             makePlaylist()
         }
 
         var welcomeMessage = findViewById<TextView>(R.id.main_message)
-        welcomeMessage.text = ("Hello $display_name!")
+        if (welcomeMessage!=null) {
+            welcomeMessage.text = ("Hello $display_name!")
+        }
+
+        // Set Dropdown Menu
+        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
+        val playlistOptions = arrayOf("My Top Songs", "Workout", "Study")
+        val adapter = ArrayAdapter(this, R.layout.dropdown_item, playlistOptions)
+        autoCompleteTextView.setAdapter(adapter)
+
+        autoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
+            selectedPlaylistType = parent.getItemAtPosition(position).toString()
+            //Toast.makeText(this, "Selected: $selectedPlaylistType", Toast.LENGTH_SHORT).show()
+        }
+
+        //Set Edit Text
+        val editText = findViewById<EditText>(R.id.customEditText)
+
+        editText.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                playlistName = s.toString()
+                //Toast.makeText(applicationContext, "Playlist Name: $playlistName", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+
+        val rootLayout = findViewById<View>(R.id.activity_main_layout)
+
+        rootLayout.setOnTouchListener { _, event ->
+            // Check if the touch event is outside of the interactive elements
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                // Clear focus from the interactive elements
+                editText.clearFocus()
+                autoCompleteTextView.clearFocus()
+                rootLayout.performClick()
+            }
+            false // Return false to allow other touch events to be processed
+        }
+
+
+
+
 
 
     }
