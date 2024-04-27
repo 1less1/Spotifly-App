@@ -79,6 +79,9 @@ class CreatePlaylistAPI(c: Context, token:String, id: String) {
             for (i in 0 until itemsArray.length()) {
                 val itemObject = itemsArray.getJSONObject(i)
                 val trackId = itemObject.getString("id")
+
+                // New Implementation
+                
                 trackIds.add(trackId)
             }
         } catch (e: Exception) {

@@ -6,7 +6,7 @@
             <corners android:radius="10dp" />
             <stroke
                 android:width="2dp"
-                android:color="@color/spotifly_green" /> <!-- Change border color on focus -->
+                android:color="@color/spotifly_green_medium" /> <!-- Change border color on focus -->
         </shape>
     </item>
     <item>

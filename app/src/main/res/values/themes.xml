@@ -2,10 +2,10 @@
     <!-- Base application theme. -->
     <style name="Theme.Spotifly" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowBackground">@drawable/gradient_background</item>
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/spotifly_green</item>
+        <item name="colorPrimary">@color/spotifly_green_medium</item>
         <item name="colorPrimaryVariant">@color/spotifly_green_darker</item>
         <item name="colorOnPrimary">@color/white</item>
 
@@ -16,24 +16,23 @@
 
         <!-- Customize your theme here. -->
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/black</item>
         <item name="android:windowFullscreen">true</item>
 
     </style>
 
-    <style name="Theme.MainActivity" parent="Theme.Spotifly">
-        <item name="android:windowBackground">@drawable/gradient_background</item>
+    <style name="Theme.StartupActivity" parent="Theme.Spotifly">
+        <item name="android:windowBackground">@color/white</item>
     </style>
+
 
 
 
     <!-- Theme for the Startup Splash Screen -->
     <style name="Theme.AnimatedSplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/black</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_spotifly_splash</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_spotifly_splash_new</item>
         <item name="windowSplashScreenAnimationDuration">3500</item>
-        <item name="postSplashScreenTheme">@style/Theme.Spotifly</item>
-
+        <item name="postSplashScreenTheme">@style/Theme.StartupActivity</item>
     </style>
 
 
