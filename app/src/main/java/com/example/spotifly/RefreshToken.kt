@@ -42,7 +42,7 @@ class RefreshToken(at:String, rt: String, et: Long) {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("Exchange Failure", "Failed to exchange Refresh Token: ${e.message}")
+                Log.e("Exchange Failure", "Failed to exchange refresh token: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {

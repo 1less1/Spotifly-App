@@ -26,8 +26,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var apiCaller: CreatePlaylistAPI
     lateinit var context: Context
     lateinit var display_name: String
-    lateinit var selectedPlaylistType: String
-    lateinit var playlistName: String
+
+    var selectedPlaylist=""
+    var playlistName=""
 
     // App Lifecycle Functions -----------------------------------------------------------------------------
     
@@ -79,20 +80,28 @@ class MainActivity : AppCompatActivity() {
         // Sets the layout (UI) for this activity (Screen) to Layout file usually in res/layout directory
         setContentView(R.layout.activity_main)
 
+        var welcomeMessage = findViewById<TextView>(R.id.main_message)
+        if (welcomeMessage!=null) {
+            welcomeMessage.text = ("Hello $display_name!")
+        }
+
+        val createPlaylistButton = findViewById<Button>(R.id.create_playlist_button)
+        createPlaylistButton.setOnClickListener {
+            // Check if selectedPlaylistType and playlistName are not empty or null
+
+            if (selectedPlaylist.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a playlist type to continue!", Toast.LENGTH_SHORT).show()
+            } else if (playlistName.isNullOrEmpty()) {
+                Toast.makeText(this, "Please input a playlist name to continue!", Toast.LENGTH_SHORT).show()
+            } else {
+                makePlaylist()
+            }
+
+        }
 
         val signOutButton = findViewById<Button>(R.id.sign_out_button)
         signOutButton.setOnClickListener{
             signOutSpotify()
-        }
-
-        val apiCallButton = findViewById<Button>(R.id.create_playlist_button)
-        apiCallButton.setOnClickListener {
-            makePlaylist()
-        }
-
-        var welcomeMessage = findViewById<TextView>(R.id.main_message)
-        if (welcomeMessage!=null) {
-            welcomeMessage.text = ("Hello $display_name!")
         }
 
         // Set Dropdown Menu
@@ -102,11 +111,11 @@ class MainActivity : AppCompatActivity() {
         autoCompleteTextView.setAdapter(adapter)
 
         autoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
-            selectedPlaylistType = parent.getItemAtPosition(position).toString()
+            selectedPlaylist = parent.getItemAtPosition(position).toString()
             //Toast.makeText(this, "Selected: $selectedPlaylistType", Toast.LENGTH_SHORT).show()
         }
 
-        //Set Edit Text
+        // Set Edit Text
         val editText = findViewById<EditText>(R.id.customEditText)
 
         editText.addTextChangedListener(object: TextWatcher {
@@ -123,7 +132,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-
+        // Below code clears focus from UI elements when clicked off
         val rootLayout = findViewById<View>(R.id.activity_main_layout)
 
         rootLayout.setOnTouchListener { _, event ->
@@ -136,11 +145,6 @@ class MainActivity : AppCompatActivity() {
             }
             false // Return false to allow other touch events to be processed
         }
-
-
-
-
-
 
     }
 
@@ -159,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun makePlaylist() {
-        apiCaller.main()
+        apiCaller.main(selectedPlaylist, playlistName)
 
     }
 
