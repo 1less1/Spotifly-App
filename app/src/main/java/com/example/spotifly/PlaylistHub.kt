@@ -22,7 +22,6 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
             try {
                 runBlocking {
 
-
                     // Get a list of the user's top 50 songs and a list of the corresponding artists
                     val (userTopSongs, userTopSongsArtists) = async { playlistCreator.getUserTopItems() }.await()
                     println("User Top Songs After Function Call: $userTopSongs")

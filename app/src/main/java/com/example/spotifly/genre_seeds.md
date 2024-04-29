@@ -1,9 +1,7 @@
 #For each playlist recommendation generator:
 - 3 seed_genres
 - 2 seed_tracks (trackIds)
-- 
-
-
+-
 
 "acoustic"
 "afrobeat"
