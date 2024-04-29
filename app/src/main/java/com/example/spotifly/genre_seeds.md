@@ -1,6 +1,6 @@
 #For each playlist recommendation generator:
-- 2 seed_genres
-- 3 seed_tracks (trackIds)
+- 3 seed_genres
+- 2 seed_tracks (trackIds)
 - 
 
 

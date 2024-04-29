@@ -15,64 +15,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
-class CreatePlaylistAPI(c: Context, token:String, id: String) {
+class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
 
-    var accessToken = token
-    var userID = id
-    val context = c
-
-    fun main(playlistType: String, playlistName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            try {
-                runBlocking {
-
-                    val (userTopSongs, userTopSongsArtists) = async { getUserTopItems() }.await()
-                    println("User Top Songs After Function Call: $userTopSongs")
-                    println("Artists for each Top Songs: $userTopSongsArtists")
-
-                    val userTopSongsGenres = async { getArtistInfo(userTopSongsArtists) }.await()
-                    println("Genres for each Top Song: $userTopSongsGenres")
-
-                    val targetGenres = arrayListOf("edm", "pop")
-                    val targetSongList = async { getSongsFromGenre(targetGenres, userTopSongs, userTopSongsGenres) }.await()
-                    println("Target Songs that fall under 'electronic' and 'dance pop' $targetSongList")
-
-                    val seedTracks = async { finalizeSeedTracks(targetSongList)}.await()
-                    println("Seed Tracks from the target list: $seedTracks")
-
-                    val url = async { createRecommendationUrl(
-                        limit = "50",
-                        seed_tracks = seedTracks,
-                        seed_genres = targetGenres,
-                        target_danceability = "0.6",
-                        min_energy = "0.8",
-                        min_popularity = "70",
-                        min_tempo = "120",) }.await()
-                    println("URL for the final GET Request: $url")
-
-                    val recommendedTracks = async { getRecommendations(url) }.await()
-                    println("Seed Generation of Recommended Tracks: $recommendedTracks")
-
-                    val playlistId = async { createPlaylist(playlistName) }.await()
-                    println("Playlist ID After Function Call: $playlistId")
-
-                    async { editPlaylist(playlistId, recommendedTracks) }.await()
-                }
-
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Playlist Made Successfully!", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error -> ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-        }
-    }
+    val accessToken = accessToken
+    val userId = userId
+    val context = context
 
     // HTTP GET Request - Returns 2 Lists: User Top 50 Songs and the 50 Artists associated with each song
     fun getUserTopItems(): Pair<List<String>, List<String>> {
@@ -208,21 +155,21 @@ class CreatePlaylistAPI(c: Context, token:String, id: String) {
         val seedTracks = mutableListOf<String>()
         val shuffledTracksList = tracksList.shuffled()
 
-        if (tracksList.size>3) {
+        if (tracksList.size>2) {
             // If the tracksList has more than 3 songs, add 3 "random" songs
-            val randomTracks = shuffledTracksList.take(3)
+            val randomTracks = shuffledTracksList.take(2)
             seedTracks.addAll(randomTracks)
 
         } else {
-            // If the tracksList has less than 3 songs, add all of the songs
+            // If the tracksList has less than 2 songs, add all of the songs
             val randomTracks = shuffledTracksList.take(tracksList.size)
             seedTracks.addAll(randomTracks)
         }
         return seedTracks
     }
 
+    /*
     fun createRecommendationUrl(
-        limit: String,
         seed_tracks: List<String>,
         seed_genres: List<String>? = null,
         seed_artists: List<String>? = null,
@@ -259,7 +206,7 @@ class CreatePlaylistAPI(c: Context, token:String, id: String) {
         val urlParams = mutableListOf<String>()
 
         // Add Required Parameters
-        urlParams.add("limit=$limit")
+        urlParams.add("limit=50")
         urlParams.add("market=US")
         urlParams.add("seed_tracks=${seed_tracks.joinToString(",")}")
         seed_genres?.let { urlParams.add("seed_genres=${it.joinToString(",") { genre -> genre.replace(" ", "+") }}") }
@@ -306,6 +253,44 @@ class CreatePlaylistAPI(c: Context, token:String, id: String) {
         return url
 
     }
+
+     */
+
+    fun createRecommendationUrl2(
+        seed_tracks: List<String>,
+        seed_genres: List<String>? = null,
+        seed_artists: List<String>? = null,
+        parameters: Map<String, String?> ): String {
+
+        val urlParams = mutableListOf<String>()
+
+        // Add Required Parameters
+        urlParams.add("limit=50")
+        urlParams.add("market=US")
+        urlParams.add("seed_tracks=${seed_tracks.joinToString(",")}")
+        seed_genres?.let { urlParams.add("seed_genres=${it.joinToString(",") { genre -> genre.replace(" ", "+") }}") }
+        seed_artists?.let { urlParams.add("seed_artists=${it.joinToString(",")}") }
+
+
+        // Add Optional Parameters
+        for ((key, value) in parameters) {
+            if (value != null) {
+                urlParams.add("$key=$value")
+            }
+        }
+
+        // Construct the URL
+        val baseUrl = "https://api.spotify.com/v1/recommendations"
+        val url = if (urlParams.isNotEmpty()) {
+            "$baseUrl?${urlParams.joinToString("&")}"
+        } else {
+            baseUrl
+        }
+        return url
+    }
+
+
+    // HTTP Get Request - Generates and returns a list of tracks based on all the info gathered above
     fun getRecommendations(url: String): List<String> {
         val client = OkHttpClient()
 
@@ -377,7 +362,7 @@ class CreatePlaylistAPI(c: Context, token:String, id: String) {
 
 
         val request = Request.Builder()
-            .url("https://api.spotify.com/v1/users/$userID/playlists")
+            .url("https://api.spotify.com/v1/users/$userId/playlists")
             .post(requestBody)
             .header("Authorization", "Bearer $accessToken")
             .header("Content-Type", "application/json")

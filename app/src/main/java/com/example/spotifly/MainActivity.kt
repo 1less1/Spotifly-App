@@ -23,11 +23,11 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var accessToken: String
     lateinit var user_id: String
-    lateinit var apiCaller: CreatePlaylistAPI
+    lateinit var playlistHub: PlaylistHub
     lateinit var context: Context
     lateinit var display_name: String
 
-    var selectedPlaylist=""
+    var playlistType=""
     var playlistName=""
 
     // App Lifecycle Functions -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         // Sets the layout (UI) for this activity
         Handler().postDelayed({
-            apiCaller = CreatePlaylistAPI(context, accessToken, user_id)
+            playlistHub = PlaylistHub(context,accessToken,user_id)
             setUI()
         },585)
 
@@ -89,12 +89,12 @@ class MainActivity : AppCompatActivity() {
         createPlaylistButton.setOnClickListener {
             // Check if selectedPlaylistType and playlistName are not empty or null
 
-            if (selectedPlaylist.isNullOrEmpty()) {
+            if (playlistType.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a playlist type to continue!", Toast.LENGTH_SHORT).show()
             } else if (playlistName.isNullOrEmpty()) {
                 Toast.makeText(this, "Please input a playlist name to continue!", Toast.LENGTH_SHORT).show()
             } else {
-                makePlaylist()
+                makePlaylist(playlistType, playlistName)
             }
 
         }
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         autoCompleteTextView.setAdapter(adapter)
 
         autoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
-            selectedPlaylist = parent.getItemAtPosition(position).toString()
+            playlistType = parent.getItemAtPosition(position).toString()
             //Toast.makeText(this, "Selected: $selectedPlaylistType", Toast.LENGTH_SHORT).show()
         }
 
@@ -162,8 +162,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun makePlaylist() {
-        apiCaller.main(selectedPlaylist, playlistName)
+    fun makePlaylist(playlistType: String, playlistName: String) {
+        playlistHub.main(playlistType, playlistName)
 
     }
 
