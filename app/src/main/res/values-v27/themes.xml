@@ -8,7 +8,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/spotifly_green_medium</item>
         <item name="colorPrimaryVariant">@color/spotifly_green_darker</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/darker_white</item>
 
         <!-- Secondary brand color.
         <item name="colorSecondary">@color/spotifly_purple_lighter</item>
@@ -24,6 +24,6 @@
 
 
     <style name="Theme.StartupActivity" parent="Theme.Spotifly">
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@color/darker_white</item>
     </style>
 </resources>

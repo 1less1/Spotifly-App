@@ -2,13 +2,6 @@ package com.example.spotifly
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONArray
@@ -75,7 +68,7 @@ class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
     }
 
 
-    // HTTP GET Request - Takes in a list of Artist IDs. Then returns each artist's Genres.
+    // HTTP GET Request - Takes in a list of Artist IDs and then returns each artist's Genres.
     fun getArtistInfo(artistList: List<String>): List<List<String>> {
         val client = OkHttpClient()
 
@@ -151,112 +144,34 @@ class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
 
     }
 
-    fun finalizeSeedTracks(tracksList: List<String>): List<String> {
+    // Chooses 1 random user track from the filtered track list returned from getSongsFromGenre() to be used as a seedTrack
+    fun finalizeSeedTracks(tracksList: List<String>, presetSeedTracks: List<String>): List<String> {
         val seedTracks = mutableListOf<String>()
         val shuffledTracksList = tracksList.shuffled()
+        val shuffledPresetSeedTracks = presetSeedTracks.shuffled()
+        var count = 3 // Number of preset tracks to be added
+        var index = 0
 
-        if (tracksList.size>2) {
-            // If the tracksList has more than 3 songs, add 3 "random" songs
-            val randomTracks = shuffledTracksList.take(2)
-            seedTracks.addAll(randomTracks)
-
-        } else {
-            // If the tracksList has less than 2 songs, add all of the songs
-            val randomTracks = shuffledTracksList.take(tracksList.size)
-            seedTracks.addAll(randomTracks)
+        // If the user has tracks for the playlist...
+        if (tracksList.size!=0) {
+            // Add random user track
+            seedTracks.add(shuffledTracksList[0])
+            count = 2 // Change preset track count to 2 since there was a user track added
         }
+
+        while (count > 0 && index < shuffledPresetSeedTracks.size) {
+            val track = shuffledPresetSeedTracks[index]
+            if (track !in seedTracks) {
+                seedTracks.add(track)
+                count--
+            }
+            index++
+        }
+
         return seedTracks
     }
 
-    /*
-    fun createRecommendationUrl(
-        seed_tracks: List<String>,
-        seed_genres: List<String>? = null,
-        seed_artists: List<String>? = null,
-        min_acousticness: String? = null,
-        max_acousticness: String? = null,
-        target_acousticness: String? = null,
-        min_danceability: String? = null,
-        max_danceability: String? = null,
-        target_danceability: String? = null,
-        target_duration_ms: String? = null,
-        min_energy: String? = null,
-        max_energy: String? = null,
-        target_energy: String? = null,
-        min_instrumentalness: String? = null,
-        max_instrumentalness: String? = null,
-        target_instrumentalness: String? = null,
-        min_key: String? = null,
-        max_key: String? = null,
-        target_key: String? = null,
-        min_liveness: String? = null,
-        max_liveness: String? = null,
-        target_liveness: String? = null,
-        min_loudness: String? = null,
-        max_loudness: String? = null,
-        target_loudness: String? = null,
-        min_popularity: String? = null,
-        max_popularity: String? = null,
-        target_popularity: String? = null,
-        min_tempo: String? = null,
-        max_tempo: String? = null,
-        target_tempo: String? = null,
-        target_valence: String? = null
-    ): String {
-        val urlParams = mutableListOf<String>()
-
-        // Add Required Parameters
-        urlParams.add("limit=50")
-        urlParams.add("market=US")
-        urlParams.add("seed_tracks=${seed_tracks.joinToString(",")}")
-        seed_genres?.let { urlParams.add("seed_genres=${it.joinToString(",") { genre -> genre.replace(" ", "+") }}") }
-        seed_artists?.let { urlParams.add("seed_artists=${it.joinToString(",")}") }
-
-        // Add Optional Parameters
-        min_acousticness?.let { urlParams.add("min_acousticness=$it") }
-        max_acousticness?.let { urlParams.add("max_acousticness=$it") }
-        target_acousticness?.let { urlParams.add("target_acousticness=$it") }
-        min_danceability?.let { urlParams.add("min_danceability=$it") }
-        max_danceability?.let { urlParams.add("max_danceability=$it") }
-        target_danceability?.let { urlParams.add("target_danceability=$it") }
-        target_duration_ms?.let { urlParams.add("target_duration_ms=$it") }
-        min_energy?.let { urlParams.add("min_energy=$it") }
-        max_energy?.let { urlParams.add("max_energy=$it") }
-        target_energy?.let { urlParams.add("target_energy=$it") }
-        min_instrumentalness?.let { urlParams.add("min_instrumentalness=$it") }
-        max_instrumentalness?.let { urlParams.add("max_instrumentalness=$it") }
-        target_instrumentalness?.let { urlParams.add("target_instrumentalness=$it") }
-        min_key?.let { urlParams.add("min_key=$it") }
-        max_key?.let { urlParams.add("max_key=$it") }
-        target_key?.let { urlParams.add("target_key=$it") }
-        min_liveness?.let { urlParams.add("min_liveness=$it") }
-        max_liveness?.let { urlParams.add("max_liveness=$it") }
-        target_liveness?.let { urlParams.add("target_liveness=$it") }
-        min_loudness?.let { urlParams.add("min_loudness=$it") }
-        max_loudness?.let { urlParams.add("max_loudness=$it") }
-        target_loudness?.let { urlParams.add("target_loudness=$it") }
-        min_popularity?.let { urlParams.add("min_popularity=$it") }
-        max_popularity?.let { urlParams.add("max_popularity=$it") }
-        target_popularity?.let { urlParams.add("target_popularity=$it") }
-        min_tempo?.let { urlParams.add("min_tempo=$it") }
-        max_tempo?.let { urlParams.add("max_tempo=$it") }
-        target_tempo?.let { urlParams.add("target_tempo=$it") }
-        target_valence?.let { urlParams.add("target_valence=$it") }
-
-        // Construct the URL
-        val baseUrl = "https://api.spotify.com/v1/recommendations"
-        val url = if (urlParams.isNotEmpty()) {
-            "$baseUrl?${urlParams.joinToString("&")}"
-        } else {
-            baseUrl
-        }
-        return url
-
-    }
-
-     */
-
-    fun createRecommendationUrl2(
+    fun createRecommendationURL(
         seed_tracks: List<String>,
         seed_genres: List<String>? = null,
         seed_artists: List<String>? = null,

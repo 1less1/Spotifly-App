@@ -106,7 +106,9 @@ class MainActivity : AppCompatActivity() {
 
         // Set Dropdown Menu
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
-        val playlistOptions = arrayOf("My Top Songs", "Workout", "Study")
+        // Playlist Options that correspond with Playlist Types in PlaylistHub
+        // TODO: Put playlistOptions into a map (dictionary) under this format key = Playlist Type/Name and value = Fun two sentence maximum description of how the playlist is designed
+        val playlistOptions = arrayOf("My Top Songs", "Electric Dance Anthems", "Pumped Up Pop", "Riding the Waves")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, playlistOptions)
         autoCompleteTextView.setAdapter(adapter)
 
