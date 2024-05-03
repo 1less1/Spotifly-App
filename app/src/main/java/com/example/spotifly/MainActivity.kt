@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +24,10 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.spotify.sdk.android.auth.AuthorizationClient
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.textfield.TextInputLayout
+import kotlin.math.min
 
 // Holds the Main UI for the APP and is where most API calls will happen
 class MainActivity : AppCompatActivity() {
@@ -31,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var playlistHub: PlaylistHub
     lateinit var context: Context
     lateinit var display_name: String
+    lateinit var pfp_url: String
 
     var playlistType=""
     var playlistName=""
@@ -43,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
         user_id = Spotifly.SharedPrefsHelper.getSharedPref("user_id", "")
         display_name = Spotifly.SharedPrefsHelper.getSharedPref("display_name", "")
+        pfp_url = Spotifly.SharedPrefsHelper.getSharedPref("pfp_url", "")
         context = applicationContext
 
         // Sets the layout (UI) for this activity
@@ -80,7 +88,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Methods -----------------------------------------------------------------------------
-
     fun setUI() {
         // Sets the layout (UI) for this activity (Screen) to Layout file usually in res/layout directory
         setContentView(R.layout.activity_main_drawer_layout)
@@ -90,18 +97,42 @@ class MainActivity : AppCompatActivity() {
             welcomeMessage.text = ("Hello $display_name!")
         }
 
+
         // Set Dropdown Menu -----------------------------------------------------------------------------
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
         // Playlist Options that correspond with Playlist Types in PlaylistHub
         // TODO: Put playlistOptions into a map (dictionary) under this format key = Playlist Type/Name and value = Fun two sentence maximum description of how the playlist is designed
-        val playlistOptions = arrayOf("My Top Songs", "Electric Dance Anthems", "Pumped Up Pop", "Riding the Waves")
+        val playlistOptions = arrayOf("My Top Songs", "Electric Dance Anthems", "Pumped Up Pop", "Riding the Waves", "Classic Rock", "Punk Rock", "Indie","Test")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, playlistOptions)
         autoCompleteTextView.setAdapter(adapter)
+
 
         autoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
             playlistType = parent.getItemAtPosition(position).toString()
             //Toast.makeText(this, "Selected: $selectedPlaylistType", Toast.LENGTH_SHORT).show()
         }
+
+        // Listener to adjust the dropdown height
+        val parentLayout = autoCompleteTextView.parent as View
+        parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
+            // Calculate available height of the screen
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            val screenHeight = displayMetrics.heightPixels
+
+            // Calculate the position of the bottom of the AutoCompleteTextView relative to the screen
+            val location = IntArray(2)
+            autoCompleteTextView.getLocationOnScreen(location)
+            val autoCompleteTextViewBottom = location[1] + autoCompleteTextView.height
+
+            // Calculate available space below the AutoCompleteTextView
+            val spaceBelowAutoCompleteTextView = screenHeight - autoCompleteTextViewBottom
+
+            // Set dropdown height based on the available space
+            autoCompleteTextView.dropDownHeight = min(spaceBelowAutoCompleteTextView, screenHeight / 2)
+        }
+
+
 
         // Set Edit Text -----------------------------------------------------------------------------
         val editText = findViewById<EditText>(R.id.customEditText)
@@ -128,13 +159,24 @@ class MainActivity : AppCompatActivity() {
 
         val drawerHeaderView = drawerNavigationView.getHeaderView(0)
 
+        // Set Drawer Username
         val drawerUsername = drawerHeaderView.findViewById<TextView>(R.id.drawer_username)
-        drawerUsername.text = "$display_name" // TODO: Do the same for profile pic
+        drawerUsername.text = "$display_name"
+
+        // Set Drawer Profile Pic
+        val drawerProfilePic = drawerHeaderView.findViewById<ImageView>(R.id.drawer_profile_pic)
+
+        if (pfp_url!="") {
+            Glide.with(this)
+                .load(pfp_url)
+                .apply(RequestOptions().placeholder(R.drawable.new_spotifly_logo_final)) // Placeholder while loading
+                .into(drawerProfilePic)
+
+        }
 
         val drawerMenuButton = findViewById<ImageButton>(R.id.drawer_button)
         drawerMenuButton.setOnClickListener {
             drawerLayout.open()
-
         }
 
         drawerNavigationView.setNavigationItemSelectedListener {menuItem ->

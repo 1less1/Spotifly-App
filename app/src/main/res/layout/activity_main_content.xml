@@ -43,14 +43,14 @@
         app:layout_constraintStart_toStartOf="@+id/customEditText" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dropdown_menu_til"
+        android:id="@+id/dropdown_menu_text_input_layout"
         style="@style/CustomDropdownMenu"
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="48dp"
-
         android:layout_marginBottom="12dp"
+
         app:layout_constraintBottom_toTopOf="@+id/customEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,8 +97,8 @@
         android:textFontWeight="900"
         android:textSize="12dp"
         app:layout_constraintBottom_toTopOf="@+id/create_playlist_button"
-        app:layout_constraintEnd_toEndOf="@+id/dropdown_menu_til"
-        app:layout_constraintStart_toStartOf="@+id/dropdown_menu_til" />
+        app:layout_constraintEnd_toEndOf="@+id/dropdown_menu_text_input_layout"
+        app:layout_constraintStart_toStartOf="@+id/dropdown_menu_text_input_layout" />
 
     <LinearLayout
         android:id="@+id/linearLayout"

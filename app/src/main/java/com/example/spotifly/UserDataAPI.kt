@@ -36,6 +36,14 @@ class UserDataAPI(token: String) {
                     val userID = jsonObject.getString("id")
                     val userEmail = jsonObject.getString("email")
                     val displayName = jsonObject.getString("display_name")
+                    val imagesArray = jsonObject.getJSONArray("images")
+
+                    if (imagesArray.length()>0) {
+                        val firstImage = imagesArray.getJSONObject(1)
+                        val pfp_url = firstImage.getString("url")
+                        Spotifly.SharedPrefsHelper.saveSharedPref("pfp_url", pfp_url)
+                        println("PFP URL: $pfp_url")
+                    }
 
                     Spotifly.SharedPrefsHelper.saveSharedPref("user_id", userID)
                     Spotifly.SharedPrefsHelper.saveSharedPref("email", userEmail)
