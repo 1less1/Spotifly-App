@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
 
-        android:text="Enter"
+        android:text="Let's Go!"
         android:textColor="@color/white"
         android:textSize="12dp"
         android:fontFamily="@font/roboto_regular"
@@ -39,27 +39,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.777"
-        android:stateListAnimator="@null"/>
-
-    <android.widget.Button
-        android:id="@+id/refresh_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/custom_rectangle_button"
-        android:padding="10dp"
-
-        android:fontFamily="@font/roboto_regular"
-        android:text="Refresh"
-        android:textColor="@color/white"
-        android:textFontWeight="900"
-        android:textSize="12dp"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.877"
         android:stateListAnimator="@null"/>
 
 

@@ -13,9 +13,14 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import com.spotify.sdk.android.auth.AuthorizationClient
 
 // Holds the Main UI for the APP and is where most API calls will happen
@@ -78,33 +83,14 @@ class MainActivity : AppCompatActivity() {
 
     fun setUI() {
         // Sets the layout (UI) for this activity (Screen) to Layout file usually in res/layout directory
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main_drawer_layout)
 
         var welcomeMessage = findViewById<TextView>(R.id.main_message)
         if (welcomeMessage!=null) {
             welcomeMessage.text = ("Hello $display_name!")
         }
 
-        val createPlaylistButton = findViewById<Button>(R.id.create_playlist_button)
-        createPlaylistButton.setOnClickListener {
-            // Check if selectedPlaylistType and playlistName are not empty or null
-
-            if (playlistType.isNullOrEmpty()) {
-                Toast.makeText(this, "Please select a playlist type to continue!", Toast.LENGTH_SHORT).show()
-            } else if (playlistName.isNullOrEmpty()) {
-                Toast.makeText(this, "Please input a playlist name to continue!", Toast.LENGTH_SHORT).show()
-            } else {
-                makePlaylist(playlistType, playlistName)
-            }
-
-        }
-
-        val signOutButton = findViewById<Button>(R.id.sign_out_button)
-        signOutButton.setOnClickListener{
-            signOutSpotify()
-        }
-
-        // Set Dropdown Menu
+        // Set Dropdown Menu -----------------------------------------------------------------------------
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
         // Playlist Options that correspond with Playlist Types in PlaylistHub
         // TODO: Put playlistOptions into a map (dictionary) under this format key = Playlist Type/Name and value = Fun two sentence maximum description of how the playlist is designed
@@ -117,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             //Toast.makeText(this, "Selected: $selectedPlaylistType", Toast.LENGTH_SHORT).show()
         }
 
-        // Set Edit Text
+        // Set Edit Text -----------------------------------------------------------------------------
         val editText = findViewById<EditText>(R.id.customEditText)
 
         editText.addTextChangedListener(object: TextWatcher {
@@ -134,15 +120,74 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+        // Drawer Menu -----------------------------------------------------------------------------
+        val drawerLayout = findViewById<DrawerLayout>(R.id.activity_main_drawer_layout)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
+        val drawerNavigationView = findViewById<NavigationView>(R.id.drawer_navigation_view)
+
+        val drawerHeaderView = drawerNavigationView.getHeaderView(0)
+
+        val drawerUsername = drawerHeaderView.findViewById<TextView>(R.id.drawer_username)
+        drawerUsername.text = "$display_name" // TODO: Do the same for profile pic
+
+        val drawerMenuButton = findViewById<ImageButton>(R.id.drawer_button)
+        drawerMenuButton.setOnClickListener {
+            drawerLayout.open()
+
+        }
+
+        drawerNavigationView.setNavigationItemSelectedListener {menuItem ->
+            when (menuItem.itemId) {
+                R.id.drawer_settings -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.drawer_sign_out -> {
+                    signOutSpotify()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+
+        }
+
+
+        // Buttons -----------------------------------------------------------------------------
+        val createPlaylistButton = findViewById<Button>(R.id.create_playlist_button)
+        createPlaylistButton.setOnClickListener {
+            // Check if selectedPlaylistType and playlistName are not empty or null
+
+            if (playlistType.isNullOrEmpty() or (playlistType == "Select Playlist Option")) {
+                Toast.makeText(this, "Please select a playlist type to continue!", Toast.LENGTH_SHORT).show()
+            } else if (playlistName.isNullOrEmpty()) {
+                Toast.makeText(this, "Please input a playlist name to continue!", Toast.LENGTH_SHORT).show()
+            } else {
+                createPlaylistButton.isEnabled = false
+                makePlaylist(playlistType, playlistName)
+
+                // Prevent Button Spamming - Quick and Easy -> Maybe implement returning a boolean when makePlaylist is fully done processing
+                Handler().postDelayed( {
+                    createPlaylistButton.isEnabled = true
+                }, 2000)
+
+
+            }
+
+        }
+
         // Below code clears focus from UI elements when clicked off
         val rootLayout = findViewById<View>(R.id.activity_main_layout)
-
         rootLayout.setOnTouchListener { _, event ->
             // Check if the touch event is outside of the interactive elements
             if (event.action == MotionEvent.ACTION_DOWN) {
                 // Clear focus from the interactive elements
                 editText.clearFocus()
                 autoCompleteTextView.clearFocus()
+                drawerLayout.close()
                 rootLayout.performClick()
             }
             false // Return false to allow other touch events to be processed

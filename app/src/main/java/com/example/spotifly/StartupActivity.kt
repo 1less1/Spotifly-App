@@ -47,11 +47,6 @@ class StartupActivity: AppCompatActivity() {
             checkAccessToken()
         }
 
-        val refreshButton = findViewById<Button>(R.id.refresh_button)
-        refreshButton.setOnClickListener {
-            forceRefresh()
-        }
-
     }
 
     fun checkAccessToken() {

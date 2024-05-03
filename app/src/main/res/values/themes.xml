@@ -15,8 +15,12 @@
         <item name="colorOnSecondary">@color/white</item> -->
 
         <!-- Customize your theme here. -->
-        <!-- Status bar color. -->
-        <item name="android:windowFullscreen">true</item>
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">#88000000</item>
+        <item name="android:windowTranslucentStatus">true</item>
+
+        <!-- Fullscreen Mode -->
+        <item name="android:windowFullscreen">false</item>
 
     </style>
 

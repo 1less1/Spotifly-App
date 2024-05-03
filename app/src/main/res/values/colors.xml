@@ -10,8 +10,9 @@
     <color name="light_gray">#d3d3d3</color>
     <color name="dark_gray">#3a4241</color>
 
-    <!-- Additions #E5E5E5, #F5F5F5 -->
-    <color name="darker_white">#F5F5F5</color>
+    <!-- Additions #E5E5E5, #F9F9F9 -->
+    <color name="darker_white">#F9F9F9</color>
+    <color name="transparent_dark_gray">#88333333</color>
     <color name="spotifly_green">#6efee1</color>
     <color name="spotifly_green_medium">#5dd9c0</color>
     <color name="spotifly_green_darker">#43a18e</color>
