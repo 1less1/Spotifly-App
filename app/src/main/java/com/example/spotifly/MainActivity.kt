@@ -1,6 +1,8 @@
 package com.example.spotifly
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -9,7 +11,6 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -19,14 +20,16 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.marginBottom
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.textfield.TextInputLayout
 import kotlin.math.min
 
 // Holds the Main UI for the APP and is where most API calls will happen
@@ -57,8 +60,7 @@ class MainActivity : AppCompatActivity() {
         Handler().postDelayed({
             playlistHub = PlaylistHub(context,accessToken,user_id)
             setUI()
-        },585)
-
+        },600)
 
 
     }
@@ -66,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        // Every Time the activity is started I want to fetch user data from shared preferences so it is up to date and ready
         Log.d("Main Activity", "Access Token: $accessToken")
         Log.d("Main Activity", "User ID: $user_id")
         Log.d("Main Activity", "Display Name: $display_name")
@@ -89,8 +90,8 @@ class MainActivity : AppCompatActivity() {
 
     // Methods -----------------------------------------------------------------------------
     fun setUI() {
-        // Sets the layout (UI) for this activity (Screen) to Layout file usually in res/layout directory
-        setContentView(R.layout.activity_main_drawer_layout)
+        // Sets the layout (UI) for this activity (Screen) to Layout file in res/layout directory
+        setContentView(R.layout.activity_main_drawer)
 
         var welcomeMessage = findViewById<TextView>(R.id.main_message)
         if (welcomeMessage!=null) {
@@ -100,38 +101,20 @@ class MainActivity : AppCompatActivity() {
 
         // Set Dropdown Menu -----------------------------------------------------------------------------
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
-        // Playlist Options that correspond with Playlist Types in PlaylistHub
         // TODO: Put playlistOptions into a map (dictionary) under this format key = Playlist Type/Name and value = Fun two sentence maximum description of how the playlist is designed
+        // Playlist Options that correspond with Playlist Types in PlaylistHub
         val playlistOptions = arrayOf("My Top Songs", "Electric Dance Anthems", "Pumped Up Pop", "Riding the Waves", "Classic Rock", "Punk Rock", "Indie","Test")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, playlistOptions)
         autoCompleteTextView.setAdapter(adapter)
 
+        val displayMetrics = context.resources.displayMetrics
+        val density = displayMetrics.density
+        autoCompleteTextView.dropDownHeight = (165 * density).toInt()
 
         autoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
             playlistType = parent.getItemAtPosition(position).toString()
             //Toast.makeText(this, "Selected: $selectedPlaylistType", Toast.LENGTH_SHORT).show()
         }
-
-        // Listener to adjust the dropdown height
-        val parentLayout = autoCompleteTextView.parent as View
-        parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
-            // Calculate available height of the screen
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val screenHeight = displayMetrics.heightPixels
-
-            // Calculate the position of the bottom of the AutoCompleteTextView relative to the screen
-            val location = IntArray(2)
-            autoCompleteTextView.getLocationOnScreen(location)
-            val autoCompleteTextViewBottom = location[1] + autoCompleteTextView.height
-
-            // Calculate available space below the AutoCompleteTextView
-            val spaceBelowAutoCompleteTextView = screenHeight - autoCompleteTextViewBottom
-
-            // Set dropdown height based on the available space
-            autoCompleteTextView.dropDownHeight = min(spaceBelowAutoCompleteTextView, screenHeight / 2)
-        }
-
 
 
         // Set Edit Text -----------------------------------------------------------------------------

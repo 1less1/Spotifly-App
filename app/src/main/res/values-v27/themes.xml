@@ -10,12 +10,6 @@
         <item name="colorPrimaryVariant">@color/spotifly_green_darker</item>
         <item name="colorOnPrimary">@color/darker_white</item>
 
-        <!-- Secondary brand color.
-        <item name="colorSecondary">@color/spotifly_purple_lighter</item>
-        <item name="colorSecondaryVariant">@color/spotifly_purple</item>
-        <item name="colorOnSecondary">@color/white</item> -->
-
-        <!-- Customize your theme here. -->
         <!-- Status Bar -->
         <item name="android:statusBarColor">#88000000</item>
         <item name="android:windowTranslucentStatus">true</item>
@@ -24,10 +18,13 @@
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
 
+        <!-- Font -->
+        <item name="android:fontFamily">@font/roboto_regular</item>
+
     </style>
 
 
     <style name="Theme.StartupActivity" parent="Theme.Spotifly">
-        <item name="android:windowBackground">@color/darker_white</item>
+        <item name="android:windowBackground">@drawable/gradient_background</item>
     </style>
 </resources>

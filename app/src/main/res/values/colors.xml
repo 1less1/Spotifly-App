@@ -17,7 +17,9 @@
     <color name="spotifly_green_medium">#5dd9c0</color>
     <color name="spotifly_green_darker">#43a18e</color>
     <color name="spotifly_purple">#231837</color>
+    <color name="spotifly_purple_medium">#292B45</color>
     <color name="spotifly_purple_lighter">#3E2A64</color>
+    <color name="official_spotify_green">#1ED760</color>
 
 
 </resources>

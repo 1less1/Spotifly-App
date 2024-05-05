@@ -28,6 +28,7 @@ class StartupActivity: AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
+
         Handler().postDelayed({
             splashScreen.setKeepOnScreenCondition{false}
         },3500)
@@ -39,7 +40,6 @@ class StartupActivity: AppCompatActivity() {
     // Methods -----------------------------------------------------------------------------
 
     fun setUI() {
-        // Set  UI
         setContentView(R.layout.activity_startup)
 
         val enterButton = findViewById<Button>(R.id.enter_button)

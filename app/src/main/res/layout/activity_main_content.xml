@@ -46,7 +46,7 @@
         android:id="@+id/dropdown_menu_text_input_layout"
         style="@style/CustomDropdownMenu"
 
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="48dp"
         android:layout_marginBottom="12dp"
@@ -59,10 +59,10 @@
 
         <AutoCompleteTextView
             android:id="@+id/autoCompleteTextView"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:fontFamily="@font/roboto_regular"
 
             android:inputType="none"
             android:paddingStart="40dp"
@@ -72,14 +72,16 @@
             android:popupBackground="@color/white"
             android:text="Select Playlist Option"
             android:textColor="@color/black"
+            android:fontFamily="@font/roboto_regular"
             android:textFontWeight="900"
-            android:textSize="12dp" />
+            android:textSize="12dp"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <EditText
         android:id="@+id/customEditText"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_margin="48dp"
         android:layout_marginBottom="20dp"

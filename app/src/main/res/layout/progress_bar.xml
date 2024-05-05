@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/darker_white"
+    android:background="@drawable/gradient_background"
     android:theme="@style/Theme.Spotifly">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:indeterminate="false"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progressTint="@color/spotifly_green_medium"
+            android:progressTint="@color/official_spotify_green"
             android:secondaryProgressTint="@color/white"
             android:progressBackgroundTint="@color/white"
             android:max="100"

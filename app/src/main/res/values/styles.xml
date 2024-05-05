@@ -9,8 +9,8 @@
         <item name="startIconDrawable">@drawable/headphones_icons</item>
         <item name="startIconScaleType">center</item>
         <item name="endIconTint">@color/black</item>
-    </style>
 
+    </style>
 
     <style name="RoundedCorners">
         <item name="cornerFamily">rounded</item>

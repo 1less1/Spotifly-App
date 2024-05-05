@@ -5,7 +5,7 @@
         android:id="@+id/drawer_settings"
         android:title="Settings"
         android:icon="@drawable/settings_icon"
-        android:titleCondensed="Settings"/>
+        android:titleCondensed="Settings" />
 
     <item
         android:id="@+id/drawer_sign_out"
