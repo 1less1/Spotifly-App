@@ -1,4 +1,6 @@
 package com.example.spotifly
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -11,6 +13,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -18,6 +21,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -89,6 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Methods -----------------------------------------------------------------------------
+    @SuppressLint("ClickableViewAccessibility")
     fun setUI() {
         // Sets the layout (UI) for this activity (Screen) to Layout file in res/layout directory
         setContentView(R.layout.activity_main_drawer)
@@ -103,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
         // TODO: Put playlistOptions into a map (dictionary) under this format key = Playlist Type/Name and value = Fun two sentence maximum description of how the playlist is designed
         // Playlist Options that correspond with Playlist Types in PlaylistHub
-        val playlistOptions = arrayOf("My Top Songs", "Electric Dance Anthems", "Pumped Up Pop", "Riding the Waves", "Classic Rock", "Punk Rock", "Indie","Test")
+        val playlistOptions = arrayOf("My Top Songs", "Electric Dance Anthems", "Pumped Up Pop", "Rockin' Roadtrip", "Punk Rock Paradise", "Indie")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, playlistOptions)
         autoCompleteTextView.setAdapter(adapter)
 
@@ -182,6 +187,29 @@ class MainActivity : AppCompatActivity() {
 
 
         // Buttons -----------------------------------------------------------------------------
+        // Info Popup Button
+        val infoPopupButton = findViewById<ImageButton>(R.id.info_popup_button)
+        val popupView = layoutInflater.inflate(R.layout.info_popup, null)
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow.isFocusable = true
+
+        popupWindow.setOnDismissListener {
+            infoPopupButton.setBackgroundResource(R.drawable.info_icon_outline)
+            popupWindow.dismiss()
+        }
+
+        infoPopupButton.setOnClickListener {
+            // Show the popup window
+            infoPopupButton.setBackgroundResource(R.drawable.info_icon_filled)
+            popupWindow.showAsDropDown(infoPopupButton)
+        }
+
+        // Create Playlist Button
         val createPlaylistButton = findViewById<Button>(R.id.create_playlist_button)
         createPlaylistButton.setOnClickListener {
             // Check if selectedPlaylistType and playlistName are not empty or null
@@ -197,7 +225,7 @@ class MainActivity : AppCompatActivity() {
                 // Prevent Button Spamming - Quick and Easy -> Maybe implement returning a boolean when makePlaylist is fully done processing
                 Handler().postDelayed( {
                     createPlaylistButton.isEnabled = true
-                }, 2000)
+                }, 2500)
 
 
             }

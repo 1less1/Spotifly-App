@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:xlmns="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_popup_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+
+            android:background="@color/white"
+
+            xlmns:layout_constraintBottom_toBottomOf="parent"
+            xlmns:layout_constraintEnd_toEndOf="parent"
+            xlmns:layout_constraintStart_toStartOf="parent"
+            xlmns:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/bebas_neue"
+                android:text="What is Spotifly?"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="22dp"
+                tools:layout_editor_absoluteX="143dp"
+                tools:layout_editor_absoluteY="269dp" />
+
+            <TextView
+                android:layout_width="312dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:fontFamily="@font/roboto_regular"
+                android:text="Spotifly creates playlists based on YOUR listening habits to help YOU discover new music. Just pick a genre below, name the playlist, and let the magic begin! \nIf the generated playlist is not up your alley, give it another try! No two Spotifly playlists will ever be identical."
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textFontWeight="900"
+                android:textSize="12dp"
+                xlmns:layout_constraintBottom_toBottomOf="parent"
+                xlmns:layout_constraintEnd_toEndOf="parent"
+                xlmns:layout_constraintStart_toStartOf="parent"
+                xlmns:layout_constraintTop_toTopOf="parent" />
+
+
+        </LinearLayout>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

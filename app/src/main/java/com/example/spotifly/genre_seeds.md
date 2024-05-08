@@ -1,7 +1,7 @@
 #For each playlist recommendation generator:
-- 3 seed_genres
-- 2 seed_tracks (trackIds)
--
+- 2 seed_genres
+- 2 preset seed_tracks (trackIds)
+- 1 user seed_track
 
 "acoustic"
 "afrobeat"

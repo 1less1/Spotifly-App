@@ -29,44 +29,6 @@ class AuthorizationActivity: AppCompatActivity() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-
-        // Check if result comes from the correct auth request
-        if (requestCode == Spotifly.Global.REQUEST_CODE) {
-            // Get the authorization result from the client and save it
-            val response = AuthorizationClient.getResponse(resultCode, intent)
-            when (response.type) {
-                AuthorizationResponse.Type.CODE -> {
-                    // Authentication was successful (A user auth token was returned from the request)
-                    val authCode = response.code
-
-                    exchangeCode(authCode)
-
-                    Spotifly.HorizontalProgressBar.animateProgress(this)
-
-                    val intent = Intent(this, MainActivity::class.java)
-                     Handler().postDelayed({
-                         startActivity(intent)
-                         finish()
-                     }, 1850)
-
-                }
-                AuthorizationResponse.Type.ERROR -> {
-                    // Authentication error occurred
-                    Toast.makeText(this, "Login Error: ${response.error}", Toast.LENGTH_SHORT).show()
-
-                }
-                else -> {
-                    // Auth flow was cancelled ie: Closing out of the login prompt!
-                    Toast.makeText(this, "Login Canceled", Toast.LENGTH_SHORT).show()
-
-                }
-                // All of the above "Toast" methods display a status message every time you are done with the Authorization Request
-            }
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         val cookieManager = CookieManager.getInstance()
@@ -101,6 +63,45 @@ class AuthorizationActivity: AppCompatActivity() {
 
         // Use the Spotify client to open a log in screen with the created request from above
         AuthorizationClient.openLoginActivity(this, Spotifly.Global.REQUEST_CODE, request)
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+
+        // Check if result comes from the correct auth request
+        if (requestCode == Spotifly.Global.REQUEST_CODE) {
+            // Get the authorization result from the client and save it
+            val response = AuthorizationClient.getResponse(resultCode, intent)
+            when (response.type) {
+                AuthorizationResponse.Type.CODE -> {
+                    // Authentication was successful (A user auth token was returned from the request)
+                    val authCode = response.code
+
+                    exchangeCode(authCode)
+
+                    Spotifly.HorizontalProgressBar.animateProgress(this)
+
+                    val intent = Intent(this, MainActivity::class.java)
+                    Handler().postDelayed({
+                        startActivity(intent)
+                        finish()
+                    }, 1850)
+
+                }
+                AuthorizationResponse.Type.ERROR -> {
+                    // Authentication error occurred
+                    Toast.makeText(this, "Login Error: ${response.error}", Toast.LENGTH_SHORT).show()
+
+                }
+                else -> {
+                    // Auth flow was cancelled ie: Closing out of the login prompt!
+                    Toast.makeText(this, "Login Canceled", Toast.LENGTH_SHORT).show()
+
+                }
+                // All of the above "Toast" methods display a status message every time you are done with the Authorization Request
+            }
+        }
     }
 
 
@@ -169,10 +170,6 @@ class AuthorizationActivity: AppCompatActivity() {
 
 
     }
-
-
-
-
 
 
     }

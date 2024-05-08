@@ -171,6 +171,7 @@ class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
         return seedTracks
     }
 
+    // Creates URL for Recommendation API GET Request
     fun createRecommendationURL(
         seed_tracks: List<String>,
         seed_genres: List<String>? = null,
@@ -206,7 +207,7 @@ class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
 
 
     // HTTP Get Request - Generates and returns a list of tracks based on all the info gathered above
-    fun getRecommendations(url: String): List<String> {
+    fun getRecommendations(url: String): MutableList<String> {
         val client = OkHttpClient()
 
         val request = Request.Builder()
@@ -248,6 +249,18 @@ class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
         //Log.d("API Response", responseBody ?: "Empty response")
         return recommendedTracks
 
+    }
+
+
+    // Add Original Seed tracks to Generated Recommendations
+    fun addSeedTracksToRecommendations(seedTracks: List<String>, recommendedTracks: MutableList<String>): List<String> {
+        for (track in seedTracks) {
+            if (track !in recommendedTracks) {
+                recommendedTracks.add(track)
+            }
+        }
+
+        return recommendedTracks
     }
 
 
@@ -308,7 +321,6 @@ class CreatePlaylistAPI(context: Context, accessToken: String, userId: String) {
         return playlistID
 
     }
-
 
 
     // HTTP POST Request - Adds Songs from a List to an established Playlist identified by its Playlist ID

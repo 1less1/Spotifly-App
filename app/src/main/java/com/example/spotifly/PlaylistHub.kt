@@ -36,9 +36,11 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
 
 
                     } else {
-                        val (customPlaylistParams, targetGenres, seedGenres, presetSeedTrack) = async { getPlaylistParameters(playlistType) }.await()
+                        val (customPlaylistParams, targetGenres, seedGenres, presetSeedTracks) = async { getPlaylistParameters(playlistType) }.await()
                         // targetGenres - the genres of songs you would like to sort out of the user's top 50 songs
                         // seedGenres - the 2 genres you would like your recommendation generation to focus on
+                        // presetSeed - a list of songs that you would like your recommendation generation to focus on
+
 
                         // Get a 2 dimensional list containing the genres associated with each of the user's top 50 songs
                         val userTopSongsGenres = async { playlistCreator.getArtistInfo(userTopSongsArtists)}.await()
@@ -49,7 +51,7 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
                         println("Filtered Songs: $filteredUserSongs")
 
                         // Pick 2 random tracks from the filtered songs to be used as seedTracks
-                        val seedTracks = async { playlistCreator.finalizeSeedTracks(filteredUserSongs, presetSeedTrack)}.await()
+                        val seedTracks = async { playlistCreator.finalizeSeedTracks(filteredUserSongs, presetSeedTracks)}.await()
                         println("Seed Tracks: $seedTracks")
 
                         // Create getRecommendation url
@@ -63,11 +65,15 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
                         val recommendedTracks = async { playlistCreator.getRecommendations(url)}.await()
                         println("Seed Generation of Recommended Tracks: $recommendedTracks")
 
+                        val finalPlaylistTracks = async { playlistCreator.addSeedTracksToRecommendations(seedTracks, recommendedTracks)}.await()
+                        println("Final Playlist Tracks: $finalPlaylistTracks")
+
                         // Create and edit a new playlist
                         val playlistId = async { playlistCreator.createPlaylist(playlistName)}.await()
                         println("Playlist ID After Function Call: $playlistId")
 
-                        async { playlistCreator.editPlaylist(playlistId, recommendedTracks) }.await()
+                        // Add Songs to Playlist
+                        async { playlistCreator.editPlaylist(playlistId, finalPlaylistTracks) }.await()
 
                     }
 
@@ -92,7 +98,7 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
     data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
 
     fun getPlaylistParameters(playlistType: String): Quadruple<Map<String, String?>, List<String>, List<String>, List<String>> {
-        // Every Playlist type needs to have 4 parameters: customization settings, targetGenres, seedGenres, presetSeedTrack
+        // Every Playlist type needs to have 4 parameters: customization settings, targetGenres, seedGenres, presetSeedTrack (trackIds)
         // Available Genre seeds found in genre_seeds.md
         
         return when (playlistType) {
@@ -117,7 +123,30 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
                 ),
                 listOf("pop", "dance pop", "edm", "dance"),
                 listOf("dance pop", "pop"),
-                listOf("0rSLgV8p5FzfnqlEk4GzxE", "09IStsImFySgyp0pIQdqAc") // presetSeedTrack -> Closer -Chainsmokers and The Middle -Zedd
+                listOf("0rSLgV8p5FzfnqlEk4GzxE", "09IStsImFySgyp0pIQdqAc", "6FE2iI43OZnszFLuLtvvmg", "7EQGXaVSyEDsCWKmUcfpLk", "02iXInevQEAlihE3IPF0eh", "6cmm1LMvZdB5zsCwX5BjqE", "2x7MyWybabEz6Y6wvHuwGE", "2LEF1A8DOZ9wRYikWgVlZ8")
+                // Closer -Chainsmokers, The Middle -Zedd, Classic -MKTO, Die Young -Kesha, International Love -Pitbull, Finesse -Bruno Mars, Just Dance -Lady Gaga, Good Feeling -Flo Rida
+            )
+            "Rockin' Roadtrip" -> Quadruple(
+                mapOf(
+                    "min_energy" to "0.65",
+                    "min_popularity" to "60",
+                ),
+                listOf("rock", "rock-n-roll", "hard-rock"),
+                listOf("rock","hard-rock"),
+                listOf("7o2CTH4ctstm8TNelqjb51", "0C80GCp0mMuBzLf3EAXqxv", "08mG3Y1vljYA6bvDt4Wqkj", "4ECNtOnqzxutZkXP4TE3n3", "7GonnnalI2s19OCQO1J7Tf", "4aVuWgvD0X63hcOCnZtNFA", "5CQ30WqJwcep0pYcV4AMNc", "7ofV2J7Ndzo2s5NBEgfpxl", "5qxChyzKLEyoPJ5qGrdurN", "4KfSdst7rW39C0sfhArdrz")
+                // Sweet Child O' Mine -Guns N' Roses, Shoot to Thrill -AC/DC, Back in Black -AC/DC, Separate Ways(Worlds Apart) -Journey, Kickstart My Heart -Motley Crue, Hold the Line -TOTO
+                // Stairway to Heaven -Led Zeppelin, The Show Must Go On -Queen, No Sleep Till Brooklyn -Beastie Boys, Barracuda -Heart
+            )
+            "Punk Rock Paradise" -> Quadruple(
+                mapOf(
+                    "min_energy" to "0.5",
+                    "min_popularity" to "50",
+                ),
+                listOf("punk-rock", "alt-rock", "hardcore"),
+                listOf("punk-rock"),
+                listOf("2l57cfmCnOkwNX1tky02n1", "1A5V1sxyCLpKJezp75tUXn", "5PUawWFG1oIS2NwEcyHaCr", "42et6fnHCw1HIPSrdPprMl", "05qCCJQJiOwvPQBb7akf1R", "23oxJmDc1V9uLUSmN2LIvx", "33iv3wnGMrrDugd7GBso1z", "6SpLc7EXZIPpy0sVko0aoU", "1Dr1fXbc2IxaK1Mu8P8Khz")
+                // Move Along -All American Rejects, Closing Time -Semisonic, Uma Thurman -Fall Out Boy, Semi-Charmed Life -Third Eye Blind
+                // Jamie All Over -Mayday Parade, Ocean Avenue -Yellowcard, My Own Worst Enemy -Lit, Misery Business -Paramore, When I Come Around -Green Day
             )
             // Add other playlist types similarly
             else -> throw IllegalArgumentException("Invalid playlistType: $playlistType")
