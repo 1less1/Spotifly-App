@@ -60,6 +60,12 @@ _Install the APK and follow the tutorial graphic below!_
 2. Allow _Unknown App Installs_ from your Browser or File Explorer
 3. Install the App
 
+### App Tutorial: 
+
+<div align="left">
+  <img src="project images/Spotifly App Tutorial.png" style="width: 65%;">
+    
+</div>
 
 
 
