@@ -1,6 +1,3 @@
-<!-- Resources -->
-
-
 # Spotifly
 
 <!-- PROJECT LOGO -->
@@ -41,7 +38,29 @@ Spotifly does not guarantee to be fully accurate with playlist recommendations b
 
 ### Built With
 
-* [![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=android-studio&logoColor=white)](https://developer.android.com/studio)
-* [![Kotlin](https://img.shields.io/badge/Kotlin-0095D5?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
-* [![Spotify Web API](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://developer.spotify.com/documentation/web-api/)
+* [![Android Studio](https://img.shields.io/badge/Android%20Studio-32B768?style=for-the-badge&logo=android-studio&logoColor=white)](https://developer.android.com/studio)
+* [![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+* [![Spotify Web API](https://img.shields.io/badge/Spotify-1AB954?style=for-the-badge&logo=spotify&logoColor=white)](https://developer.spotify.com/documentation/web-api/)
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+How to install and use Spotifly!
+
+### System Requirements:
+* [![Android 8.0 Oreo](https://img.shields.io/badge/Android%208.0%20Oreo-32B768.svg?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/about/versions/oreo)
+* 100 mb Disk Space
+* Internet Connection
+
+### Installation:
+
+_Install the APK and follow the tutorial graphic below!_
+
+1. Download Android APK here: [Spotifly APK](https://example.com)
+2. Allow _Unknown App Installs_ from your Browser or File Explorer
+3. Install the App
+
+
+
+
 
