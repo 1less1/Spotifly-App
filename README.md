@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/1less1/Spotifly-App">
-    <img src="project images/Spotifly Logo Complete.png" alt="Logo" width="80" height="80">
+    <img src="https://github.com/1less1/Spotifly-App/blob/main/project%20images/Spotifly%20Logo%20Complete.png" alt="Logo" width="80" height="80">
   </a>
   <p align="center">
     Android App used to create Spotify playlists "On the Fly"!
@@ -20,8 +20,8 @@
 
 <div align="center">
   <a href="https://github.com/1less1/Spotifly-App" style="display: inline-block;">
-    <img src="project images/app screenshots/Screenshot_20240508_225626_Spotifly.jpg" style="width: 18%;">
-    <img src="project images/app screenshots/Screenshot_20240508_225710_Spotifly.jpg" style="width: 18%;">
+    <img src="https://github.com/1less1/Spotifly-App/blob/main/project%20images/app%20screenshots/Screenshot_20240508_225626_Spotifly.jpg" style="width: 18%;">
+    <img src="https://github.com/1less1/Spotifly-App/blob/main/project%20images/app%20screenshots/Screenshot_20240508_225710_Spotifly.jpg" style="width: 18%;">
   </a>
 </div>
 
@@ -63,7 +63,7 @@ _Install the APK and follow the tutorial graphic below!_
 ### App Tutorial: 
 
 <div align="left">
-  <img src="project images/Spotifly App Tutorial.png" style="width: 65%;">
+  <img src="https://github.com/1less1/Spotifly-App/blob/main/project%20images/Spotifly%20App%20Tutorial.png" style="width: 65%;">
     
 </div>
 
