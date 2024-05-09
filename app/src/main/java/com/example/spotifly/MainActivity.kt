@@ -237,11 +237,8 @@ class MainActivity : AppCompatActivity() {
         rootLayout.setOnTouchListener { _, event ->
             // Check if the touch event is outside of the interactive elements
             if (event.action == MotionEvent.ACTION_DOWN) {
-                // Clear focus from the interactive elements
-                editText.clearFocus()
-                autoCompleteTextView.clearFocus()
-                drawerLayout.close()
-                rootLayout.performClick()
+                // Clear focus from all interactive elements
+                currentFocus?.clearFocus()
             }
             false // Return false to allow other touch events to be processed
         }

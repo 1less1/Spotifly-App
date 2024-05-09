@@ -43,6 +43,7 @@
             android:text="Username"
             android:textColor="@color/white"
             android:fontFamily="@font/roboto_regular"
+            android:textFontWeight="900"
             android:textSize="16dp"
 
             android:layout_gravity="center"/>

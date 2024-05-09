@@ -16,10 +16,10 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp"
-
             android:background="@color/white"
+            android:orientation="vertical"
+
+            android:padding="5dp"
 
             xlmns:layout_constraintBottom_toBottomOf="parent"
             xlmns:layout_constraintEnd_toEndOf="parent"
@@ -29,23 +29,23 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="start"
                 android:fontFamily="@font/bebas_neue"
                 android:text="What is Spotifly?"
-                android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="22dp"
                 tools:layout_editor_absoluteX="143dp"
                 tools:layout_editor_absoluteY="269dp" />
 
             <TextView
-                android:layout_width="312dp"
+                android:layout_width="241dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
 
                 android:fontFamily="@font/roboto_regular"
-                android:text="Spotifly creates playlists based on YOUR listening habits to help YOU discover new music. Just pick a genre below, name the playlist, and let the magic begin! \nIf the generated playlist is not up your alley, give it another try! No two Spotifly playlists will ever be identical."
-                android:textAlignment="center"
+                android:text="Spotifly creates playlists based on YOUR listening habits to help YOU discover new music. Pick a genre, playlist name, and let the magic begin! If the generated playlist is not up your alley, give it another try. No two Spotifly playlists are identical!"
+
+
                 android:textColor="@color/black"
                 android:textFontWeight="900"
                 android:textSize="12dp"
