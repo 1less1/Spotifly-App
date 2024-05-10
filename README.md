@@ -54,7 +54,7 @@ How to install and use Spotifly!
 
 _Install the APK and follow the tutorial graphic below!_
 
-1. Download Android APK here: [Spotifly APK](https://github.com/1less1/Spotifly-App/releases/tag/APK)
+1. Download Android APK here: [Spotifly Version 1.0 APK](https://github.com/1less1/Spotifly-App/releases/download/APK/Spotifly.apk)
 2. Allow _Unknown App Installs_ from your Browser or File Explorer
 3. Install the App
 
