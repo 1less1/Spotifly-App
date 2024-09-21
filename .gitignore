@@ -8,9 +8,13 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
+# /build discludes the BuildConfig.java file from being under VCS
 /build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
 key_store.jks
+
+# My Additions
+

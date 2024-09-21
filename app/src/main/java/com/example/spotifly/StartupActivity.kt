@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -20,6 +21,20 @@ class StartupActivity: AppCompatActivity() {
         accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
         expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME", 0L)
         refreshToken = Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN", "")
+
+        /*
+        val myENV = BuildConfig.MY_ENV
+        val clientID = BuildConfig.CLIENT_ID
+        val clientSecret = BuildConfig.CLIENT_SECRET
+        val requestCode = BuildConfig. REQUEST_CODE
+        val redirectURI = BuildConfig.REDIRECT_URI
+
+        Log.d("Startup Activity", "Client ID: $clientID")
+        Log.d("Startup Activity", "Client Secret: $clientSecret")
+        Log.d("Startup Activity", "Redirect URI: $redirectURI")
+        Log.d("Startup Activity", "Request Code: $requestCode")
+
+         */
 
 
         var splashScreen = installSplashScreen()

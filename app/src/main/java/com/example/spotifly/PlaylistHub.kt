@@ -148,6 +148,7 @@ class PlaylistHub(context: Context, accessToken: String, userId: String) {
                 // Move Along -All American Rejects, Closing Time -Semisonic, Uma Thurman -Fall Out Boy, Semi-Charmed Life -Third Eye Blind
                 // Jamie All Over -Mayday Parade, Ocean Avenue -Yellowcard, My Own Worst Enemy -Lit, Misery Business -Paramore, When I Come Around -Green Day
             )
+
             // Add other playlist types similarly
             else -> throw IllegalArgumentException("Invalid playlistType: $playlistType")
         }

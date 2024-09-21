@@ -1,8 +1,23 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+// Load the local.properties file
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
+}
+
+val clientID = localProperties["CLIENT_ID"]?.toString()
+val clientSecret = localProperties["CLIENT_SECRET"]?.toString()
+val redirectURI = localProperties["REDIRECT_URI"]?.toString()
+val requestCode = localProperties["REQUEST_CODE"]?.toString()?.toInt()
 
 android {
     namespace = "com.example.spotifly"
@@ -22,6 +37,13 @@ android {
 
         // Fix?
         manifestPlaceholders.putAll(myManifestPlaceholders)
+
+        // Adding properties to BuildConfig
+        buildConfigField("String", "CLIENT_ID", "\"${clientID}\"")
+        buildConfigField("String", "CLIENT_SECRET", "\"${clientSecret}\"")
+        buildConfigField("String", "REDIRECT_URI", "\"${redirectURI}\"")
+        buildConfigField("int", "REQUEST_CODE", "${requestCode ?: 0}")  // Fallback to 0 if null
+
     }
 
     buildTypes {
@@ -30,6 +52,12 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    // ------ NEW -----
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -64,5 +92,7 @@ dependencies {
     // GLIDE
     implementation("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
+
+
 
 }
