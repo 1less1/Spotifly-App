@@ -19,8 +19,8 @@
 ## About The Project
 
 <div align="center" style="display: flex; justify-content: center; align-items: center; height: 100vh; gap: 10px;">
-  <img src="project images/app screenshots/Screenshot_20240508_225626_Spotifly.jpg" style="width: 18%;">
-  <img src="project images/app screenshots/Screenshot_20240508_225710_Spotifly.jpg" style="width: 18%;">
+  <img src="project images/app screenshots/Screenshot_20240508_225626_Spotifly.jpg" style="width: 30%;">
+  <img src="project images/app screenshots/Screenshot_20240508_225710_Spotifly.jpg" style="width: 30%;">
 </div>
 
 Spotifly is a Spotify companion App that was designed to give users the freedom to generate playlist recommendations on demand. Gone are the days to wait for Spotify to auto generate playlists for you! Spotifly uses the Spotify Web API service to authorize and retrieve user data. The data is then sorted and used in combination with preset themes/genres provided by Spotifly to create playlist recommendations based on user listening habits. The playlists created through Spotifly are automatically uploaded to the user's Spotify Library and are fully customizable! Spotifly hopes to give users a quick way to discover new music. 
