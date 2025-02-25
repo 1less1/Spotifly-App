@@ -56,6 +56,7 @@ class AuthorizationActivity: AppCompatActivity() {
     fun authenticateSpotify() {
         // Generate a code verifier and code challenge
         val codeVerifier = generateCodeVerifier()
+        // Save the codeVerifier value for use in RefreshToken() in the StartupActivitu
         Spotifly.SharedPrefsHelper.saveSharedPref("CODE_VERIFIER", codeVerifier)
         val codeChallenge = generateCodeChallenge(codeVerifier)
 

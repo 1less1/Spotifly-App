@@ -73,7 +73,11 @@ class RefreshToken(at: String, rt: String, et: Long, private val codeVerifier: S
                 } else {
                     Log.e("API Error", "Unsuccessful response: ${response.code}")
                 }
+
             }
+
         })
+
     }
+    
 }
