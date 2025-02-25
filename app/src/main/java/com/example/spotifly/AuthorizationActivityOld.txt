@@ -10,21 +10,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import com.spotify.sdk.android.auth.AuthorizationRequest
-import android.util.Base64 as AndroidBase64
 
 import android.webkit.CookieManager
 import okhttp3.*
 import okhttp3.Request
 import okio.IOException
 import org.json.JSONObject
-import java.util.Base64 as JavaBase64
-import java.security.MessageDigest
-import java.security.SecureRandom
-
-
+import java.util.Base64
 
 // I am changing the functionality of this activity to handle an auth code for this branch
-class AuthorizationActivity: AppCompatActivity() {
+class AuthorizationActivityOld: AppCompatActivity() {
 
     // App Lifecycle Functions -----------------------------------------------------------------------------
 
@@ -54,54 +49,20 @@ class AuthorizationActivity: AppCompatActivity() {
     }
 
     fun authenticateSpotify() {
-        // Generate a code verifier and code challenge
-        val codeVerifier = generateCodeVerifier()
-        Spotifly.SharedPrefsHelper.saveSharedPref("CODE_VERIFIER", codeVerifier)
-        val codeChallenge = generateCodeChallenge(codeVerifier)
-
-        // Create an Authorization Request with PKCE
-        val builder = AuthorizationRequest.Builder(
-            Spotifly.Global.CLIENT_ID,
-            AuthorizationResponse.Type.CODE,
-            Spotifly.Global.REDIRECT_URI
-        )
+        // Create an Authorization Request with the following arguments
+        val builder = AuthorizationRequest.Builder(Spotifly.Global.CLIENT_ID, AuthorizationResponse.Type.CODE, Spotifly.Global.REDIRECT_URI)
 
         // Request Scopes (Permissions) to access from the User's Spotify Account
-        val scopeArray = arrayOf(
-            "user-read-private", "user-read-email", "playlist-read-private", "playlist-read-collaborative",
-            "playlist-modify-private", "playlist-modify-public", "user-top-read", "user-read-recently-played",
-            "user-follow-read"
-        )
+        val scopeArray = arrayOf("user-read-private", "user-read-email", "playlist-read-private", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public",
+            "user-top-read", "user-read-recently-played", "user-follow-read")
 
         builder.setScopes(scopeArray)
         builder.setShowDialog(true)
-
-        // Manually add the code challenge parameters to the authorization request
+        // Actually build the full Authorization Request
         val request = builder.build()
-        val authUrl = request.toUri().buildUpon()
-            .appendQueryParameter("code_challenge", codeChallenge)
-            .appendQueryParameter("code_challenge_method", "S256")
-            .build()
 
         // Use the Spotify client to open a log in screen with the created request from above
         AuthorizationClient.openLoginActivity(this, Spotifly.Global.REQUEST_CODE, request)
-    }
-
-    // Function to generate a code verifier
-    fun generateCodeVerifier(): String {
-        val random = SecureRandom()
-        val codeVerifier = ByteArray(32)
-        random.nextBytes(codeVerifier)
-        return AndroidBase64.encodeToString(codeVerifier, AndroidBase64.URL_SAFE or AndroidBase64.NO_PADDING or AndroidBase64.NO_WRAP)
-    }
-
-    // Function to generate a code challenge
-    fun generateCodeChallenge(codeVerifier: String): String {
-        val bytes = codeVerifier.toByteArray(Charsets.US_ASCII)
-        val messageDigest = MessageDigest.getInstance("SHA-256")
-        messageDigest.update(bytes, 0, bytes.size)
-        val digest = messageDigest.digest()
-        return AndroidBase64.encodeToString(digest, AndroidBase64.URL_SAFE or AndroidBase64.NO_PADDING or AndroidBase64.NO_WRAP)
     }
 
 
@@ -155,7 +116,7 @@ class AuthorizationActivity: AppCompatActivity() {
             .build()
 
         val credentials = Spotifly.Global.CLIENT_ID+":"+Spotifly.Global.CLIENT_SECRET
-        val encodedCredentials = JavaBase64.getEncoder().encodeToString(credentials.toByteArray())
+        val encodedCredentials = Base64.getEncoder().encodeToString(credentials.toByteArray())
 
         val request = Request.Builder()
             .url("https://accounts.spotify.com/api/token")

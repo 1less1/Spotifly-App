@@ -6,19 +6,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-// Load the local.properties file
-val localProperties = Properties().apply {
-    val localFile = rootProject.file("local.properties")
-    if (localFile.exists()) {
-        localFile.inputStream().use { load(it) }
-    }
-}
-
-val clientID = localProperties["CLIENT_ID"]?.toString()
-val clientSecret = localProperties["CLIENT_SECRET"]?.toString()
-val redirectURI = localProperties["REDIRECT_URI"]?.toString()
-val requestCode = localProperties["REQUEST_CODE"]?.toString()?.toInt()
-
 android {
     namespace = "com.example.spotifly"
     compileSdk = 34
@@ -37,13 +24,6 @@ android {
 
         // Fix?
         manifestPlaceholders.putAll(myManifestPlaceholders)
-
-        // Adding properties to BuildConfig
-        buildConfigField("String", "CLIENT_ID", "\"${clientID}\"")
-        buildConfigField("String", "CLIENT_SECRET", "\"${clientSecret}\"")
-        buildConfigField("String", "REDIRECT_URI", "\"${redirectURI}\"")
-        buildConfigField("int", "REQUEST_CODE", "${requestCode ?: 0}")  // Fallback to 0 if null
-
     }
 
     buildTypes {
@@ -82,7 +62,7 @@ dependencies {
 
     // Spotify Api
     //implementation("com.spotify.android.appremote:app-remote:0.7.2")
-    implementation("com.spotify.android:auth:2.0.1")
+    implementation("com.spotify.android:auth:2.1.1")
 
     // HTTP
     implementation("com.squareup.okhttp3:okhttp:4.9.1")

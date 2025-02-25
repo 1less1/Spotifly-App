@@ -2,9 +2,7 @@ package com.example.spotifly
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.Handler
-import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -15,12 +13,14 @@ class StartupActivity: AppCompatActivity() {
     lateinit var accessToken: String
     var expirationTime by Delegates.notNull<Long>()
     lateinit var refreshToken: String
+    lateinit var codeVerifier: String
 
     // App Lifecycle Functions -----------------------------------------------------------------------------
     override fun onCreate(savedInstanceState: Bundle?) {
         accessToken = Spotifly.SharedPrefsHelper.getSharedPref("ACCESS_TOKEN", "")
         expirationTime = Spotifly.SharedPrefsHelper.getSharedPref("EXPIRATION_TIME", 0L)
         refreshToken = Spotifly.SharedPrefsHelper.getSharedPref("REFRESH_TOKEN", "")
+        codeVerifier = Spotifly.SharedPrefsHelper.getSharedPref("CODE_VERIFIER", "")
 
         /*
         val myENV = BuildConfig.MY_ENV
@@ -73,7 +73,7 @@ class StartupActivity: AppCompatActivity() {
 
         } else if (System.currentTimeMillis() >= expirationTime) {
             // Refresh the Access Token then navigate to the Main Activity
-            RefreshToken(accessToken, refreshToken, expirationTime).refreshAccessToken()
+            RefreshToken(accessToken, refreshToken, expirationTime, codeVerifier).refreshAccessToken()
             navigateToMainActivity()
 
         } else {
@@ -86,7 +86,7 @@ class StartupActivity: AppCompatActivity() {
 
     // This is only here for debugging!!!!
     fun forceRefresh() {
-        RefreshToken(accessToken, refreshToken, expirationTime).refreshAccessToken()
+        RefreshToken(accessToken, refreshToken, expirationTime, codeVerifier).refreshAccessToken()
         navigateToMainActivity()
 
     }

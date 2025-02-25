@@ -39,14 +39,18 @@
 
         <!-- Required Addition Detailed on Spotify Android SDK Github -->
         <!-- This handles the redirect URI after Authorization -->
-        <activity android:name="com.spotify.sdk.android.auth.LoginActivity"
-            android:exported="true">
+        <activity
+            android:name="com.spotify.sdk.android.auth.LoginActivity"
+            android:exported="true"
+            tools:replace="android:exported">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="spotifly" android:host="spotifly://callback" />
             </intent-filter>
+
         </activity>
 
 
