@@ -15,6 +15,11 @@
   </p>
 </div>
 
+## NOTICE
+Unfortunately as of November 27th, 2024, Spotify's free developer web API has gotten rid of the endpoint this app was built on: "Get Recommendations". 
+This endpoint allowed the app to use seed songs and genres to generate recommended playlists based on Spotify song metadata. Without this endpoint, only the "My Top Songs" playlist option works.
+I will hopefully find an alternative endpoint to use in the near future. Please enjoy the second release of the app!
+
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
