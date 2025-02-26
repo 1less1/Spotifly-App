@@ -43,8 +43,7 @@
                 android:layout_gravity="center"
 
                 android:fontFamily="@font/roboto_regular"
-                android:text="Spotifly creates playlists based on YOUR listening habits to help YOU discover new music. Pick a genre, playlist name, and let the magic begin! If the generated playlist is not up your alley, give it another try. No two Spotifly playlists are identical!"
-
+                android:text="@string/info_popup_text"
 
                 android:textColor="@color/black"
                 android:textFontWeight="900"

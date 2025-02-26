@@ -3,6 +3,7 @@ package com.example.spotifly
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
@@ -54,39 +55,35 @@ class AuthorizationActivity: AppCompatActivity() {
     }
 
     fun authenticateSpotify() {
-        // Generate a code verifier and code challenge
         val codeVerifier = generateCodeVerifier()
-        // Save the codeVerifier value for use in RefreshToken() in the StartupActivitu
         Spotifly.SharedPrefsHelper.saveSharedPref("CODE_VERIFIER", codeVerifier)
+
         val codeChallenge = generateCodeChallenge(codeVerifier)
 
-        // Create an Authorization Request with PKCE
         val builder = AuthorizationRequest.Builder(
             Spotifly.Global.CLIENT_ID,
             AuthorizationResponse.Type.CODE,
             Spotifly.Global.REDIRECT_URI
         )
 
-        // Request Scopes (Permissions) to access from the User's Spotify Account
-        val scopeArray = arrayOf(
+        builder.setScopes(arrayOf(
             "user-read-private", "user-read-email", "playlist-read-private", "playlist-read-collaborative",
             "playlist-modify-private", "playlist-modify-public", "user-top-read", "user-read-recently-played",
             "user-follow-read"
-        )
+        ))
 
-        builder.setScopes(scopeArray)
         builder.setShowDialog(true)
+        builder.setCustomParam("code_challenge", codeChallenge)
+        builder.setCustomParam("code_challenge_method", "S256")
 
-        // Manually add the code challenge parameters to the authorization request
         val request = builder.build()
-        val authUrl = request.toUri().buildUpon()
-            .appendQueryParameter("code_challenge", codeChallenge)
-            .appendQueryParameter("code_challenge_method", "S256")
-            .build()
 
-        // Use the Spotify client to open a log in screen with the created request from above
-        AuthorizationClient.openLoginActivity(this, Spotifly.Global.REQUEST_CODE, request)
+        // Add a small delay to ensure SharedPreferences has saved the codeVerifier
+        Handler(Looper.getMainLooper()).postDelayed({
+            AuthorizationClient.openLoginActivity(this, Spotifly.Global.REQUEST_CODE, request)
+        }, 200)
     }
+
 
     // Function to generate a code verifier
     fun generateCodeVerifier(): String {
@@ -109,16 +106,19 @@ class AuthorizationActivity: AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
 
-        // Check if result comes from the correct auth request
         if (requestCode == Spotifly.Global.REQUEST_CODE) {
-            // Get the authorization result from the client and save it
             val response = AuthorizationClient.getResponse(resultCode, intent)
             when (response.type) {
                 AuthorizationResponse.Type.CODE -> {
-                    // Authentication was successful (A user auth token was returned from the request)
                     val authCode = response.code
+                    val codeVerifier = Spotifly.SharedPrefsHelper.getSharedPref("CODE_VERIFIER", "")
 
-                    exchangeCode(authCode)
+                    if (codeVerifier.isNotEmpty()) {
+                        exchangeCode(authCode, codeVerifier)
+                    } else {
+                        Log.e("PKCE Error", "Code Verifier is missing!")
+                        Toast.makeText(this, "Login Error: Missing Code Verifier", Toast.LENGTH_SHORT).show()
+                    }
 
                     Spotifly.HorizontalProgressBar.animateProgress(this)
 
@@ -127,41 +127,33 @@ class AuthorizationActivity: AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     }, 1850)
-
                 }
                 AuthorizationResponse.Type.ERROR -> {
-                    // Authentication error occurred
                     Toast.makeText(this, "Login Error: ${response.error}", Toast.LENGTH_SHORT).show()
-
                 }
                 else -> {
-                    // Auth flow was cancelled ie: Closing out of the login prompt!
                     Toast.makeText(this, "Login Canceled", Toast.LENGTH_SHORT).show()
-
                 }
-                // All of the above "Toast" methods display a status message every time you are done with the Authorization Request
             }
         }
     }
 
 
     // Exchanges the Auth Code received from the AuthorizationClient for Refresh and Access Tokens
-    fun exchangeCode(authCode: String) {
+    fun exchangeCode(authCode: String, codeVerifier: String) {
         val client = OkHttpClient()
 
         val requestBody = FormBody.Builder()
             .add("grant_type", "authorization_code")
             .add("code", authCode)
             .add("redirect_uri", Spotifly.Global.REDIRECT_URI)
+            .add("client_id", Spotifly.Global.CLIENT_ID) // Include client_id
+            .add("code_verifier", codeVerifier) // Add code_verifier for PKCE
             .build()
-
-        val credentials = Spotifly.Global.CLIENT_ID+":"+Spotifly.Global.CLIENT_SECRET
-        val encodedCredentials = JavaBase64.getEncoder().encodeToString(credentials.toByteArray())
 
         val request = Request.Builder()
             .url("https://accounts.spotify.com/api/token")
             .post(requestBody)
-            .header("Authorization", "Basic $encodedCredentials")
             .header("Content-Type", "application/x-www-form-urlencoded")
             .build()
 
@@ -172,18 +164,14 @@ class AuthorizationActivity: AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string()
                         val jsonObject = JSONObject(responseBody)
 
                         val accessToken = jsonObject.getString("access_token")
-                        //val tokenType = jsonObject.getString("token_type")
                         val expiresIn = jsonObject.getInt("expires_in")
-                        val refreshToken = jsonObject.getString("refresh_token")
+                        val refreshToken = jsonObject.optString("refresh_token", "")
 
-
-                        // Using the API caller to get the USER ID, User Email, and Display Name for future activities.
                         val apiCaller = UserDataAPI(accessToken)
                         apiCaller.getUserInfo()
 
@@ -191,24 +179,16 @@ class AuthorizationActivity: AppCompatActivity() {
                         Spotifly.SharedPrefsHelper.saveSharedPref("REFRESH_TOKEN", refreshToken)
                         Spotifly.SharedPrefsHelper.saveSharedPref("EXPIRES_IN", expiresIn)
 
-                        // Calculate Access Token Expiration Time
-                        val accessTokenExpirationTime = System.currentTimeMillis() + (expiresIn*1000)
+                        val accessTokenExpirationTime = System.currentTimeMillis() + (expiresIn * 1000)
                         Spotifly.SharedPrefsHelper.saveSharedPref("EXPIRATION_TIME", accessTokenExpirationTime)
 
-                        // Debugging
                         Log.d("API Response", responseBody ?: "Empty response")
-
-
                     } else {
-                        Log.e("API Error","Unsuccessful response: ${response.code}" )
+                        Log.e("API Error", "Unsuccessful response: ${response.code}")
                     }
-
                 }
             }
         })
-
-
-
     }
 
 

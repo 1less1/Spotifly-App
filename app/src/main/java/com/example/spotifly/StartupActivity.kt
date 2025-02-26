@@ -62,6 +62,14 @@ class StartupActivity: AppCompatActivity() {
             checkAccessToken()
         }
 
+        // This button is hidden in production. You can "un-hide" it in activity_startup.xml
+        val forceRefreshButton = findViewById<Button>(R.id.force_refresh_button)
+        forceRefreshButton.setOnClickListener {
+            forceRefresh()
+        }
+
+
+
     }
 
     fun checkAccessToken() {
@@ -81,6 +89,7 @@ class StartupActivity: AppCompatActivity() {
             navigateToMainActivity()
 
         }
+
 
     }
 

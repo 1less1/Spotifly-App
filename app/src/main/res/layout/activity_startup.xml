@@ -89,6 +89,27 @@
         app:layout_constraintVertical_bias="0.777"
         android:stateListAnimator="@null"/>
 
+    <android.widget.Button
+        android:visibility="gone"
+        android:id="@+id/force_refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_rectangle_button"
+        android:fontFamily="@font/roboto_regular"
+
+        android:padding="10dp"
+        android:stateListAnimator="@null"
+        android:text="Force Refresh"
+        android:textColor="@color/white"
+        android:textFontWeight="900"
+
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.871" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
