@@ -14,7 +14,8 @@
 .externalNativeBuild
 .cxx
 local.properties
-key_store.jks
+keystore.jks
+release/
 
 # My Additions
 
